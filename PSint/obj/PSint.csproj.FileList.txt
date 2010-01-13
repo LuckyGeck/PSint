@@ -1,0 +1,8 @@
+bin\Debug\PSint.exe
+bin\Debug\PSint.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\PSint.frMain.resources
+obj\Debug\PSint.Properties.Resources.resources
+obj\Debug\PSint.csproj.GenerateResource.Cache
+obj\Debug\PSint.exe
+obj\Debug\PSint.pdb
