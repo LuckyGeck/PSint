@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
@@ -107,6 +107,7 @@ namespace PSint
 
         private void SetCaption()
         {
+
             if (path != "")
             {
                 Text = "PS interpretator - [" + Path.GetFileName(path) + "]";
@@ -145,6 +146,7 @@ namespace PSint
 
             if (bTextChanged)
             {
+
                 switch (
                     MessageBox.Show("This source file was not saved!\n Do you want to save it?", "Unsaved Changes",
                                     MessageBoxButtons.YesNoCancel))
@@ -202,7 +204,7 @@ namespace PSint
                 }
 
             }
-            frRun1.textBox2.Text += "\nPress ANY KEY...";
+            frRun1.textBox2.Text += "\r\nPress ANY KEY...";
             bReadyToCloseRun = true;
             //HideRun();
         }
@@ -228,20 +230,25 @@ namespace PSint
             //Here will be (switch), which will run functons for stndart cmd signatures
 
             //MessageBox.Show("Command=" + cmd + "\nParams='" + param + "'");
-            switch (cmd)
+            switch (cmd.ToLower())
             {
                 case "#out":
-                    frRun1.textBox2.Text += param;
+                    frRun1.textBox2.Text += param.Replace("\\n", "\r\n");
+                    frRun1.textBox2.Refresh();
                     /*MessageBox.Show(param); */
                     return "OK";
-                case "#Time":
+                case "#time":
                     frRun1.textBox2.Text += DateTime.Now.TimeOfDay;
+                    frRun1.textBox2.Refresh();
                     return "OK";
-                case "#Sleep":
+                case "#sleep":
                     System.Threading.Thread.Sleep(Int32.Parse(param));
                     return "OK";
-                default: return "Err";
+                default:
+                    return "Err";
             }
+
+            
         }
 
         private void Error(string p, int n)
