@@ -1,11 +1,32 @@
 <Configuration>
+  <SharedSolutionDisabledTemplatesManager>
+    <DisabledTemplates />
+  </SharedSolutionDisabledTemplatesManager>
+  <UserSolutionDisabledTemplatesManager>
+    <DisabledTemplates />
+  </UserSolutionDisabledTemplatesManager>
+  <EditorManager>
+    <RecentFiles>
+      <File id="7F0E0126-353B-4199-AE65-D1C37B4EC8B4/d:PSint/f:frMain.Designer.cs" caret="11396" visual-x="0" visual-y="3519" />
+      <File id="7F0E0126-353B-4199-AE65-D1C37B4EC8B4/d:PSint/f:frRun.Designer.cs" caret="2930" visual-x="0" visual-y="0" />
+      <File id="7F0E0126-353B-4199-AE65-D1C37B4EC8B4/d:PSint/f:frRun.cs" caret="605" visual-x="0" visual-y="204" />
+      <File id="7F0E0126-353B-4199-AE65-D1C37B4EC8B4/d:PSint/f:frMain.cs" caret="6335" visual-x="0" visual-y="3468" />
+    </RecentFiles>
+  </EditorManager>
+  <FileStructureView>
+    <AutoScrollToSource>False</AutoScrollToSource>
+    <TrackCaretLocation>False</TrackCaretLocation>
+  </FileStructureView>
   <CompletionStatisticsManager>
     <ItemStatistics item="Qualified:System.Windows.Forms.DialogResult">
-      <Item value="Yes" priority="0" />
       <Item value="OK" priority="0" />
+      <Item value="Yes" priority="0" />
     </ItemStatistics>
     <ItemStatistics item="Qualified:@System.IO.File">
       <Item value="OpenText" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.IO.StreamWriter">
+      <Item value="Write" priority="0" />
     </ItemStatistics>
     <ItemStatistics item="Qualified:System.Windows.Forms.TextBox">
       <Item value="Text" priority="0" />
@@ -17,24 +38,5 @@
       <Item value="KeyCode" priority="0" />
       <Item value="KeyValue" priority="1" />
     </ItemStatistics>
-    <ItemStatistics item="Qualified:System.IO.StreamWriter">
-      <Item value="Write" priority="0" />
-    </ItemStatistics>
   </CompletionStatisticsManager>
-  <EditorManager>
-    <RecentFiles>
-      <File id="7F0E0126-353B-4199-AE65-D1C37B4EC8B4/d:PSint/f:frMain.Designer.cs" caret="11396" visual-x="0" visual-y="3519" />
-      <File id="7F0E0126-353B-4199-AE65-D1C37B4EC8B4/d:PSint/f:frMain.cs" caret="6336" visual-x="0" visual-y="3349" />
-    </RecentFiles>
-  </EditorManager>
-  <UserSolutionDisabledTemplatesManager>
-    <DisabledTemplates />
-  </UserSolutionDisabledTemplatesManager>
-  <SharedSolutionDisabledTemplatesManager>
-    <DisabledTemplates />
-  </SharedSolutionDisabledTemplatesManager>
-  <FileStructureView>
-    <AutoScrollToSource>False</AutoScrollToSource>
-    <TrackCaretLocation>False</TrackCaretLocation>
-  </FileStructureView>
 </Configuration>

@@ -8,6 +8,9 @@ namespace PSint
 {
     public partial class frMain : Form
     {
+        frRun frRun1;
+        private bool bReadyToCloseRun = false;
+
         private string path = "";
 
         private bool bTextChanged = false;
@@ -168,8 +171,8 @@ namespace PSint
 
         private void runToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            textBox1.Text.Trim();
             //MessageBox.Show("IT'S RUNNING!");
+            ShowRun();
             for (int n = 0; n < textBox1.Lines.Length; n++)
             {
                 string s = textBox1.Lines[n];
@@ -199,18 +202,46 @@ namespace PSint
                 }
 
             }
+            frRun1.textBox2.Text += "\nPress ANY KEY...";
+            bReadyToCloseRun = true;
+            //HideRun();
         }
 
-        private void execCmd(string cmd, string param)
+        private void HideRun()
+        {
+            frRun1.Hide();
+            frRun1.Close();
+            bReadyToCloseRun = false;
+            this.Show();
+        }
+
+        private void ShowRun()
+        {
+            bReadyToCloseRun = false;
+            frRun1 = new frRun(this);
+            frRun1.Show();
+            frRun1.textBox2.Clear();
+        }
+
+        private string execCmd(string cmd, string param)
         {
             //Here will be (switch), which will run functons for stndart cmd signatures
-            
+
             //MessageBox.Show("Command=" + cmd + "\nParams='" + param + "'");
             switch (cmd)
             {
-                case "#out": MessageBox.Show(param); break;
+                case "#out":
+                    frRun1.textBox2.Text += param;
+                    /*MessageBox.Show(param); */
+                    return "OK";
+                case "#Time":
+                    frRun1.textBox2.Text += DateTime.Now.TimeOfDay;
+                    return "OK";
+                case "#Sleep":
+                    System.Threading.Thread.Sleep(Int32.Parse(param));
+                    return "OK";
+                default: return "Err";
             }
-             
         }
 
         private void Error(string p, int n)
@@ -238,5 +269,13 @@ namespace PSint
             textBox1.Paste();
         }
 
+
+        internal void inKbrd(string s)
+        {
+            if (bReadyToCloseRun)
+            {
+                HideRun();
+            }
+        }
     }
 }
