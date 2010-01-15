@@ -1,0 +1,2 @@
+C:\Documents and Settings\Pavel\Мои документы\Visual Studio 2008\Projects\PSint\PSint\obj\Debug\PSint.exe
+C:\Documents and Settings\Pavel\Мои документы\Visual Studio 2008\Projects\PSint\PSint\obj\Debug\PSint.pdb
