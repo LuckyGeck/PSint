@@ -1,0 +1,13 @@
+E:\Work\PS\PSint\obj\Debug\PSint.exe
+E:\Work\PS\PSint\obj\Debug\PSint.pdb
+E:\Work\PS\PSint\obj\Debug\ResolveAssemblyReference.cache
+E:\Work\PS\PSint\obj\Debug\PSint.frMain.resources
+E:\Work\PS\PSint\obj\Debug\PSint.frRun.resources
+E:\Work\PS\PSint\obj\Debug\PSint.Properties.Resources.resources
+E:\Work\PS\PSint\obj\Debug\PSint.csproj.GenerateResource.Cache
+E:\Work\PS\PSint\bin\Debug\PSint.exe.manifest
+E:\Work\PS\PSint\bin\Debug\PSint.application
+E:\Work\PS\PSint\bin\Debug\PSint.exe
+E:\Work\PS\PSint\bin\Debug\PSint.pdb
+E:\Work\PS\PSint\obj\Debug\PSint.exe.manifest
+E:\Work\PS\PSint\obj\Debug\PSint.application
