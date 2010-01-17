@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,58 +8,49 @@ namespace PSint
 {
     public class Base
     {
-        public String name;
+        public string name;
         private long lg;
         private double db;
-        private String str;
-        private String use; // Show using part of class: Long - lg, Double - db, String - str, Empty - nothing, Error - error;
+        private string str;
+        private string use; // Show using part of class: Long - lg, Double - db, String - str, Empty - nothing, Error - error;
 
         public Base()
         {
             Clear();
-            name = "Noname";
         }
-        public Base(long rhs)
-        {
-            Clear();
-            lg = rhs;
-            use = "Long";
-            name = "Noname";
-        }
-        public Base(double rhs)
-        {
-            Clear();
-            db = rhs;
-            use = "Double";
-            name = "Noname";
-        }
-        public Base(String Rname)
+        
+
+        public Base(string Rname)
         {
             Clear();
             name = Rname;
-            use = "String";
+            use = "Empty";
         }
-        public Base(String Rname,long rhs)
+        
+        public Base(string sName,long lParam)
         {
             Clear();
-            lg = rhs;
-            name = Rname;
+            lg = lParam;
+            name = sName;
             use = "Long";           
         }
-        public Base(String Rname,double rhs)
+        
+        public Base(string sName,double dParam)
         {
             Clear();
-            db = rhs;
-            name = Rname;
+            db = dParam;
+            name = sName;
             use = "Double";
         }
-        public Base(String Rname,String rhs)
+        
+        public Base(string sName,String sParam)
         {
             Clear();
-            str = rhs;
-            name = Rname;
+            str = sParam;
+            name = sName;
             use = "String";
         }
+        
         public void Clear() // Change variable value to null. Name doesn't change
         {
             use = "Empty";
@@ -67,80 +58,112 @@ namespace PSint
             db = 0;
             str = "";
         }
+        
         public static Base operator +(Base a, Base b)
         {
+            Base c = new Base();
             if (a.use == b.use)
             {
-                a.lg += b.lg;
-                a.db += b.db;
-                a.str += b.str;
+               c.lg = a.lg + b.lg;
+               c.db = a.db + b.db;
+               c.str= a.str + b.str;
             }
-            return a;
+            return c;
         }
         public static Base operator -(Base a, Base b)
         {
+            Base c = new Base();
             if (a.use == b.use)
             {
-                a.lg -= b.lg;
-                a.db -= b.db;
+                c.lg = a.lg - b.lg;
+                c.db = a.db - b.db;
                 /*while (a.str.IndexOf(b.str) != -1)
                 {
                     a.str.Remove(a.str.IndexOf(b.str), a.str.IndexOf(b.str) + b.str.Length);
                 }*/
             }
-            return a;
+            return c;
         }
         public static Base operator *(Base a, Base b)
         {
+        Base c = new Base();
             if (a.use == b.use)
             {
                 if(a.use == "Long")
-                    a.lg *= b.lg;
+                    c.lg = a.lg * b.lg;
                 if(a.use == "Double")
-                    a.db *= b.db;
+                    c.db = a.db * b.db;
                 //a.str *= b.str;
             }
-            return a;
+            return c;
         }
         public static Base operator /(Base a, Base b)
         {
+            Base c = new Base();
             if (a.use == b.use)
             {
                 if (a.use == "Long")
-                    a.lg *= b.lg;
+                    c.lg = a.lg + b.lg;
                 if (a.use == "Double")
-                    a.db *= b.db;
+                    c.db = a.db + b.db;
                 //a.str /= b.str;
             }
-            return a;
+            return c;
         }
     }
-    public class Function
+    public class Func
     {
-        private List<Base> vrb;
-        private String input;
-        private String output;
-        private String funcName;
-        TextBox code;
-        private int posi;
-        private int posj;
+        private List<Base> vrb; // Variable
+        private string sInput;
+        private string sOutput;
+        private string sFuncName;
+        private string[] code;
+        private int nPos;
+        public string sReturn = "";
+        
+        public Func(String s)
+        {
+            char[] c = "\r\n".ToCharArray();
+            code = s.Split(c);
+        }
 
-        public void GetCode(TextBox codeBox)
+        public string Run(frMain frmain1)
         {
-            code = codeBox;
-        }
-        public void GetCode(String fileName)
-        {
-        }
-        public Base FunctionUse(String name,List<Base> inVrb)
-        {
-            return inVrb[0];
-        }
-        private string Read()
-        {
-            return "11";
+            for (int n = 0; n < code.Length; n++)
+            {
+                String s = code[n];
+                s.Trim();
+
+                if (s != "")
+                {
+                    if ((s[0] == '#') || (s[0] == '='))
+                    {
+                        string cmd;
+                        string param = "";
+                        if (s.IndexOf(' ') >= 0)
+                        {
+                            cmd = s.Substring(0, s.IndexOf(' '));
+                            param = s.Substring(s.IndexOf(' ') + 1);
+                        }
+                        else
+                            cmd = s;
+
+                       frmain1.execCmd(cmd, param);
+                    }
+                    else
+                    {
+                        frmain1.Error("Unknown operator", n + 1);
+                        // stop running
+                        break;
+                    }
+                }
+
+
+            }
+            return sReturn;
         }
     }
+
     public class Methods
     {
     }

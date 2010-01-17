@@ -175,35 +175,8 @@ namespace PSint
         {
             //MessageBox.Show("IT'S RUNNING!");
             ShowRun();
-            for (int n = 0; n < textBox1.Lines.Length; n++)
-            {
-                string s = textBox1.Lines[n];
-                s.Trim();
-                
-                if (s != "")
-                {
-                    if ((s[0] == '#') || (s[0] == '='))
-                    {
-                        string cmd;
-                        string param = "";
-                        if (s.IndexOf(' ') >= 0)
-                        {
-                            cmd = s.Substring(0, s.IndexOf(' '));
-                            param = s.Substring(s.IndexOf(' ') + 1);
-                        }
-                        else
-                            cmd = s;
-
-                        execCmd(cmd, param);
-                  }
-                    else
-                    {
-                        Error("Unknown operator", n + 1);
-                        break;
-                    }
-                }
-
-            }
+            Func main = new Func(textBox1.Text);
+            main.Run(this);
             frRun1.textBox2.Text += "\r\nPress ANY KEY...";
             bReadyToCloseRun = true;
             //HideRun();
@@ -223,37 +196,109 @@ namespace PSint
             frRun1 = new frRun(this);
             frRun1.Show();
             frRun1.textBox2.Clear();
-        }
+        }     
 
-        private string execCmd(string cmd, string param)
-        {
-            //Here will be (switch), which will run functons for stndart cmd signatures
-
-            //MessageBox.Show("Command=" + cmd + "\nParams='" + param + "'");
-            switch (cmd.ToLower())
-            {
-                case "#out":
-                    frRun1.textBox2.Text += param.Replace("\\n", "\r\n");
-                    frRun1.textBox2.Refresh();
-                    /*MessageBox.Show(param); */
-                    return "OK";
-                case "#time":
-                    frRun1.textBox2.Text += DateTime.Now.TimeOfDay;
-                    frRun1.textBox2.Refresh();
-                    return "OK";
-                case "#sleep":
-                    System.Threading.Thread.Sleep(Int32.Parse(param));
-                    return "OK";
-                default:
-                    return "Err";
-            }
-
-            
-        }
-
-        private void Error(string p, int n)
+        public void Error(string p, int n)
         {
             MessageBox.Show(p + "\nLine №" + n, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        public string execCmd(string cmd, string param)
+        {
+            //Here will be (switch), which will run functions for standart cmd signatures
+            try
+            {
+                        //MessageBox.Show("Command=" + cmd + "\nParams='" + param + "'");
+            
+                switch (cmd.ToLower())
+                {
+
+                case "#random"://random a b
+
+                    Random rnd = new Random();
+                    string[] par = param.Split(' ');
+                    string ans = rnd.Next(Int32.Parse(par[0]), Int32.Parse(par[1])).ToString();
+                    param = param.Substring(par[0].Length + 1 + par[1].Length);
+                    param.Trim();
+                    if (isCmd(param)) 
+                    {
+                        string[] sCmdPar = extractCmdParam(param);
+                        param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2]);
+                    }
+                    return ans + param;
+
+                case "#out":
+                    if (isCmd(param))
+                    {
+                        string[] sCmdPar = extractCmdParam(param);
+                        param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2]);
+                    }
+                    frRun1.textBox2.Text += param.Replace("\\n", "\r\n");
+                    frRun1.textBox2.Refresh();
+                    return "";
+
+                case "#time":
+
+                    if (isCmd(param))
+                    {
+                        string[] sCmdPar = extractCmdParam(param);
+                        param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2]);
+                    }
+                    return DateTime.Now.TimeOfDay + " " + param;
+
+                case "#sleep":
+
+                    System.Threading.Thread.Sleep(Int32.Parse(param));
+                    return "";
+
+                default:
+
+                    throw new Exception("Err");
+                  //  return "Err";
+                }
+            }
+            catch 
+            {
+                return "!Error!";
+            }
+        }
+
+        public String[] extractCmdParam(String s)
+        {
+            s = " " + s;
+            String[] output = new string[3];
+            if (s.IndexOf(' ') >= 0)
+            {
+                output[0] = s.Substring(1, s.IndexOf(" #"));
+                s = s.Remove(0, s.IndexOf(" #") + 1);
+                output[1] = s.Substring(0, s.IndexOf(' '));
+                output[2] = s.Substring(s.IndexOf(' ') + 1);
+            }
+            else
+            {
+                output[0] = "";
+                output[1] = s;
+                output[2] = "";
+            }
+            return output;
+        }
+
+        private bool isCmd(string param)
+        {
+            param = " " + param;
+            if (param.Length != 0)
+            {
+                if (param.IndexOf(" #") > -1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+                return false;
         }
 
         private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
