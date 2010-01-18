@@ -50,7 +50,44 @@ namespace PSint
             name = sName;
             use = "String";
         }
+        public Base(Base bParam)
+        {
+            Clear();
+            name = bParam.name;
+            use = bParam.use;
+            lg = bParam.lg;
+            db = bParam.db;
+            str = bParam.str;
+        }
+
+        public void Set(String sParam) { str = sParam; use = "String"; }
+
+        public void Set(long lParam) { lg = lParam; use = "Long"; }
+
+        public void Set(double dParam) { db = dParam; use = "Double"; }
+
+        public void Set(Base bParam) 
+        { 
+            str = bParam.str;
+            lg = bParam.lg;
+            db = bParam.db;
+            use = bParam.use;        
+        }
         
+        public string Get()
+        {
+            switch (use)
+            {
+                case "String":
+                    return str;
+                case "Long":
+                    return lg.ToString();
+                case "Double":
+                    return db.ToString();
+                default: return "";
+            }
+        }
+
         public void Clear() // Change variable value to null. Name doesn't change
         {
             use = "Empty";
@@ -114,17 +151,79 @@ namespace PSint
     public class Func
     {
         private List<Base> vrb; // Variable
-        private string sInput;
-        private string sOutput;
-        private string sFuncName;
+      //  private string sInput;
+      //  private string sOutput;
+      //  private string sFuncName;
         private string[] code;
-        private int nPos;
+      //  private int nPos;
         public string sReturn = "";
+        private string[] sParams;
         
         public Func(String s)
         {
+            addConsts();
             char[] c = "\r\n".ToCharArray();
             code = s.Split(c);
+        }
+
+        private void addConsts()
+        {
+            vrb = new List<Base>();
+            vrb.Add(new Base("@pi", Math.PI));
+            vrb.Add(new Base("@avagadra", 6.02*Math.Pow(10,23)));
+            vrb.Add(new Base("@g", 10));
+            vrb.Add(new Base("@authors", "Pavel Sychev and Semen Mihejenok"));
+        }
+
+        public Func(String s, String sParam)
+        {
+            addConsts();
+            if (sParam != "") { sParams = sParam.Split(' '); }
+            char[] c = "\r\n".ToCharArray();
+            code = s.Split(c);
+        }
+
+        private int varExists(string sName)
+        {
+            int retVal = -1;
+            int counter = 0;
+            foreach (Base b in vrb)
+            {
+                if (b.name==sName) 
+                {
+                    retVal = counter;
+                    return retVal;
+                }
+                counter++;
+            }
+            return retVal;
+        }
+
+        private void addVar(Base param)
+        {
+
+            if (varExists(param.name) == -1)
+            {
+                vrb.Add(new Base(param));
+            }
+        }
+        
+        public void setVar(Base param)
+        {
+            int nNum = varExists(param.name);
+            if (nNum == -1) { addVar(param); }
+            else vrb[nNum].Set(param);
+        }
+
+        public string getVar(string sName)
+        {
+            int nNum = varExists(sName);
+            if (nNum == -1) 
+            { 
+                addVar(new Base("", sName));
+                return "";
+            }
+            return vrb[nNum].Get();
         }
 
         public string Run(frMain frmain1)
@@ -147,8 +246,9 @@ namespace PSint
                         }
                         else
                             cmd = s;
-
-                       frmain1.execCmd(cmd, param);
+                        if (cmd == "#return") { sReturn = frmain1.execCmd(cmd, param, this); }
+                        else frmain1.execCmd(cmd, param, this);
+                       
                     }
                     else
                     {

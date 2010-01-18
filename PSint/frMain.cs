@@ -203,61 +203,103 @@ namespace PSint
             MessageBox.Show(p + "\nLine №" + n, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
-        public string execCmd(string cmd, string param)
+        private string processVars(string sParam, Func fFunc)
+        {
+            string sRet = "";
+            string[] splitParam = sParam.Split(' ');
+            foreach (string s in splitParam)
+            {
+                if (s.IndexOf('@') == 0)
+                {
+                    sRet += fFunc.getVar(s) + " ";
+                }
+                else sRet += s+ " ";
+            }
+            sRet = sRet.Trim();
+            return sRet;
+        }
+
+        public string execCmd(string cmd, string param, Func fFunc)
         {
             //Here will be (switch), which will run functions for standart cmd signatures
             try
             {
-                        //MessageBox.Show("Command=" + cmd + "\nParams='" + param + "'");
-            
+                if (cmd!="=")
+                {
+                    param=processVars(param,fFunc);
+                }
+
                 switch (cmd.ToLower())
                 {
+                    case "#function":
+                        if (isCmd(param))
+                        {
+                            string[] sCmdPar = extractCmdParam(param);
+                            param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2],fFunc);
+                        }
+                        string funcPath = param.Split(' ')[0];
+                        param = param.Substring(param.IndexOf(' ') + 1);
+                        if (File.Exists(Path.GetDirectoryName(Application.ExecutablePath) + "\\" + funcPath + ".ps"))
+                        {
+                            string fullPath = Application.ExecutablePath + "\\" + funcPath + ".ps";
+                            FileStream FS = new FileStream(fullPath, FileMode.OpenOrCreate);
 
-                case "#random"://random a b
+                            StreamReader SR = new StreamReader(FS);
+                            string funcSource = SR.ReadToEnd();
+                            SR.Close();
+                            FS.Close();
 
-                    Random rnd = new Random();
-                    string[] par = param.Split(' ');
-                    string ans = rnd.Next(Int32.Parse(par[0]), Int32.Parse(par[1])).ToString();
-                    param = param.Substring(par[0].Length + 1 + par[1].Length);
-                    param.Trim();
-                    if (isCmd(param)) 
-                    {
-                        string[] sCmdPar = extractCmdParam(param);
-                        param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2]);
-                    }
-                    return ans + param;
+                            Func fnAdditional = new Func(funcSource, param);
+                            string sReturn = fnAdditional.Run(this);
+                            return sReturn;
+                        }
+                        else
+                            return "Error while launching function " + funcPath;
+                    case "#random"://random a b
+                        if (isCmd(param))
+                        {
+                            string[] sCmdPar = extractCmdParam(param);
+                            param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2], fFunc);
+                        }
+                        Random rnd = new Random();
+                        string[] par = param.Split(' ');
+                        string ans = rnd.Next(Int32.Parse(par[0]), Int32.Parse(par[1])).ToString();
+                        param = param.Substring(par[0].Length + 1 + par[1].Length);
+                        param.Trim();
 
-                case "#out":
-                    if (isCmd(param))
-                    {
-                        string[] sCmdPar = extractCmdParam(param);
-                        param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2]);
-                    }
-                    frRun1.textBox2.Text += param.Replace("\\n", "\r\n");
-                    frRun1.textBox2.Refresh();
-                    return "";
+                        return ans + param;
 
-                case "#time":
+                    case "#out":
+                        if (isCmd(param))
+                        {
+                            string[] sCmdPar = extractCmdParam(param);
+                            param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2],fFunc);
+                        }
+                        frRun1.textBox2.Text += param.Replace("\\n", "\r\n");
+                        frRun1.textBox2.Refresh();
+                        return "";
 
-                    if (isCmd(param))
-                    {
-                        string[] sCmdPar = extractCmdParam(param);
-                        param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2]);
-                    }
-                    return DateTime.Now.TimeOfDay + " " + param;
+                    case "#time":
 
-                case "#sleep":
+                        if (isCmd(param))
+                        {
+                            string[] sCmdPar = extractCmdParam(param);
+                            param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2], fFunc);
+                        }
+                        return DateTime.Now.TimeOfDay + " " + param;
 
-                    System.Threading.Thread.Sleep(Int32.Parse(param));
-                    return "";
+                    case "#sleep":
 
-                default:
+                        System.Threading.Thread.Sleep(Int32.Parse(param));
+                        return "";
 
-                    throw new Exception("Err");
-                  //  return "Err";
+                    default:
+
+                        throw new Exception("Err");
+                    //  return "Err";
                 }
             }
-            catch 
+            catch
             {
                 return "!Error!";
             }
