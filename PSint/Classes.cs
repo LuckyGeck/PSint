@@ -178,7 +178,35 @@ namespace PSint
         public Func(String s, String sParam)
         {
             addConsts();
-            if (sParam != "") { sParams = sParam.Split(' '); }
+            if (sParam != "") 
+            { 
+                sParams = sParam.Split(' ');
+                for (int i = 0; i < sParams.Count(); i++)
+                {
+                    sParams[i] = sParams[i].Trim();
+                    if (sParams[i] != "")
+                    {
+                        long lg;
+                        double db;
+
+                        if (long.TryParse(sParams[i], out lg))
+                        {
+                            vrb.Add(new Base("@param_" + i.ToString(), lg));
+                        }
+                        else
+                            if (double.TryParse(sParams[i], out db))
+                            {
+                                vrb.Add(new Base("@param_" + i.ToString(), db));
+                            }
+                            else
+                            {
+                                vrb.Add(new Base("@param_" + i.ToString(), sParams[i]));
+                            }
+                    }
+
+                }
+                
+            }
             char[] c = "\r\n".ToCharArray();
             code = s.Split(c);
         }

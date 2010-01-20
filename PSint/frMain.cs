@@ -231,6 +231,38 @@ namespace PSint
 
                 switch (cmd.ToLower())
                 {
+                    case "=":
+                        string var1Name = param.Split(' ')[0];
+                        param = param.Substring(var1Name.Length + 1);
+                        param = processVars(param, fFunc);
+                        if (isCmd(param))
+                        {
+                            string[] sCmdPar = extractCmdParam(param);
+                            param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2], fFunc);
+                        }
+
+                        param = param.Trim();
+                        long lg;
+                        double db;
+                        Base b;
+                        if (long.TryParse(param,out lg))
+                            {
+                                b = new Base(var1Name, lg);
+                            }
+                        else
+                            if (double.TryParse(param, out db))
+                            {
+                                b = new Base(var1Name, db);
+                            }
+                            else
+                            {
+                                b = new Base(var1Name, param);
+                            }
+
+                        fFunc.setVar(b);
+
+                        return "";
+
                     case "#function":
                         if (isCmd(param))
                         {
@@ -239,9 +271,9 @@ namespace PSint
                         }
                         string funcPath = param.Split(' ')[0];
                         param = param.Substring(param.IndexOf(' ') + 1);
-                        if (File.Exists(Path.GetDirectoryName(Application.ExecutablePath) + "\\" + funcPath + ".ps"))
+                        if (File.Exists(Path.GetDirectoryName(path) + "\\" + funcPath + ".ps"))
                         {
-                            string fullPath = Application.ExecutablePath + "\\" + funcPath + ".ps";
+                            string fullPath = Path.GetDirectoryName(path) + "\\" + funcPath + ".ps";
                             FileStream FS = new FileStream(fullPath, FileMode.OpenOrCreate);
 
                             StreamReader SR = new StreamReader(FS);
@@ -275,7 +307,9 @@ namespace PSint
                             string[] sCmdPar = extractCmdParam(param);
                             param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2],fFunc);
                         }
-                        frRun1.textBox2.Text += param.Replace("\\n", "\r\n");
+                        param = param.Replace("\\n", "\r\n");
+                        param = param.Replace("==", "=");
+                        frRun1.textBox2.Text += param;
                         frRun1.textBox2.Refresh();
                         return "";
 
@@ -292,6 +326,13 @@ namespace PSint
 
                         System.Threading.Thread.Sleep(Int32.Parse(param));
                         return "";
+                    case "#return":
+                        if (isCmd(param))
+                        {
+                            string[] sCmdPar = extractCmdParam(param);
+                            param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2], fFunc);
+                        }
+                        return param;
 
                     default:
 
