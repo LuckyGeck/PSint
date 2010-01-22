@@ -224,13 +224,18 @@ namespace PSint
             //Here will be (switch), which will run functions for standart cmd signatures
             try
             {
-                if (cmd!="=")
+                if ((cmd!="=")&&(cmd!="#in"))
                 {
                     param=processVars(param,fFunc);
                 }
 
                 switch (cmd.ToLower())
                 {
+                    case "#in":
+                        string varName = param.Split(' ')[0];
+                        string ret=frRun1.gettext();
+                        fFunc.setVar(new Base(varName, ret));
+                        return "";
                     case "=":
                         string var1Name = param.Split(' ')[0];
                         param = param.Substring(var1Name.Length + 1);
@@ -411,6 +416,12 @@ namespace PSint
             {
                 HideRun();
             }
+            else
+                if (frRun1.bGotText==false)
+                {
+                    frRun1.sEnteredText = s;
+                    frRun1.bGotText = true;
+                }
         }
     }
 }

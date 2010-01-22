@@ -151,14 +151,13 @@ namespace PSint
     public class Func
     {
         private List<Base> vrb; // Variable
-      //  private string sInput;
-      //  private string sOutput;
-      //  private string sFuncName;
+        //  private string sInput;
+        //  private string sOutput;
+        //  private string sFuncName;
         private string[] code;
-      //  private int nPos;
+        //  private int nPos;
         public string sReturn = "";
         private string[] sParams;
-        
         public Func(String s)
         {
             addConsts();
@@ -170,7 +169,7 @@ namespace PSint
         {
             vrb = new List<Base>();
             vrb.Add(new Base("@pi", Math.PI));
-            vrb.Add(new Base("@avagadra", 6.02*Math.Pow(10,23)));
+            vrb.Add(new Base("@avagadra", 6.02 * Math.Pow(10, 23)));
             vrb.Add(new Base("@g", 10));
             vrb.Add(new Base("@authors", "Pavel Sychev and Semen Mihejenok"));
         }
@@ -178,8 +177,8 @@ namespace PSint
         public Func(String s, String sParam)
         {
             addConsts();
-            if (sParam != "") 
-            { 
+            if (sParam != "")
+            {
                 sParams = sParam.Split(' ');
                 for (int i = 0; i < sParams.Count(); i++)
                 {
@@ -205,7 +204,7 @@ namespace PSint
                     }
 
                 }
-                
+
             }
             char[] c = "\r\n".ToCharArray();
             code = s.Split(c);
@@ -217,7 +216,7 @@ namespace PSint
             int counter = 0;
             foreach (Base b in vrb)
             {
-                if (b.name==sName) 
+                if (b.name == sName)
                 {
                     retVal = counter;
                     return retVal;
@@ -235,7 +234,7 @@ namespace PSint
                 vrb.Add(new Base(param));
             }
         }
-        
+
         public void setVar(Base param)
         {
             int nNum = varExists(param.name);
@@ -246,8 +245,8 @@ namespace PSint
         public string getVar(string sName)
         {
             int nNum = varExists(sName);
-            if (nNum == -1) 
-            { 
+            if (nNum == -1)
+            {
                 addVar(new Base("", sName));
                 return "";
             }
@@ -276,7 +275,7 @@ namespace PSint
                             cmd = s;
                         if (cmd == "#return") { sReturn = frmain1.execCmd(cmd, param, this); }
                         else frmain1.execCmd(cmd, param, this);
-                       
+
                     }
                     else
                     {
@@ -289,6 +288,7 @@ namespace PSint
 
             }
             return sReturn;
+
         }
     }
 

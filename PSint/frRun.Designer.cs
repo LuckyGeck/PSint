@@ -64,7 +64,7 @@ namespace PSint
             this.Controls.Add(this.textBox1);
             this.Name = "frRun";
             this.Text = "frRun";
-            this.Load += new System.EventHandler(this.frRun_Load);
+           // this.Load += new System.EventHandler(this.frRun_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
