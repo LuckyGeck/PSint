@@ -150,9 +150,10 @@ namespace PSint
     }
     public class Func
     {
+        static public List<Base> globalVrb;
         private List<Base> vrb; // Variable
-        //  private string sInput;
-        //  private string sOutput;
+        public string sInput;
+        public string sOutput;
         //  private string sFuncName;
         private string[] code;
         //  private int nPos;
@@ -163,6 +164,8 @@ namespace PSint
             addConsts();
             char[] c = "\r\n".ToCharArray();
             code = s.Split(c);
+            sInput = "Console";
+            sOutput = "Console";
         }
 
         private void addConsts()
@@ -171,12 +174,14 @@ namespace PSint
             vrb.Add(new Base("@pi", Math.PI));
             vrb.Add(new Base("@avagadra", 6.02 * Math.Pow(10, 23)));
             vrb.Add(new Base("@g", 10));
-            vrb.Add(new Base("@authors", "Pavel Sychev and Semen Mihejenok"));
+            vrb.Add(new Base("@authors", "Pavel Sychev and Semen Mikheynok"));
         }
 
         public Func(String s, String sParam)
         {
             addConsts();
+            sInput = "Console";
+            sOutput = "Console";
             if (sParam != "")
             {
                 sParams = sParam.Split(' ');
@@ -273,8 +278,14 @@ namespace PSint
                         }
                         else
                             cmd = s;
-                        if (cmd == "#return") { sReturn = frmain1.execCmd(cmd, param, this); }
-                        else frmain1.execCmd(cmd, param, this);
+                        if (cmd == "#return")
+                        {
+                            sReturn = frmain1.execCmd(cmd, param, this);
+                        }
+                        else
+                        {
+                            frmain1.execCmd(cmd, param, this);
+                        }
 
                     }
                     else

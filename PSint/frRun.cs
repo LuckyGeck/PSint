@@ -11,7 +11,7 @@ namespace PSint
     public partial class frRun : Form
     {
         private frMain form1;
-        public bool bGotText = true;
+        public bool bGotText = false;
         public string sEnteredText = "";
 
         public frRun(frMain form)
@@ -25,7 +25,9 @@ namespace PSint
             if (e.KeyCode == Keys.Enter)
             {
                 string s = textBox1.Text;
+                sEnteredText = textBox1.Text;
                 textBox1.Text = "";
+                bGotText = true;
                 form1.inKbrd(s);
             }            
         }
@@ -38,10 +40,26 @@ namespace PSint
 
             while (!bGotText)
             {
-                System.Threading.Thread.Sleep(500);
+                Application.DoEvents(); /// Processing new Events, for example user insert some text into textbox
+                System.Threading.Thread.Sleep(50); /// Waiting 50 mili-seconds
             }
             MessageBox.Show(sEnteredText);
             return sEnteredText;
         }
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
     }
 }

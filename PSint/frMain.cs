@@ -3,12 +3,15 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace PSint
 {
+    
     public partial class frMain : Form
     {
         frRun frRun1;
+
         private bool bReadyToCloseRun = false;
 
         private string path = "";
@@ -221,7 +224,7 @@ namespace PSint
 
         public string execCmd(string cmd, string param, Func fFunc)
         {
-            //Here will be (switch), which will run functions for standart cmd signatures
+            ///Here will be (switch), which will run functions for standart cmd signatures
             try
             {
                 if ((cmd!="=")&&(cmd!="#in"))
@@ -233,7 +236,7 @@ namespace PSint
                 {
                     case "#in":
                         string varName = param.Split(' ')[0];
-                        string ret=frRun1.gettext();
+                        string ret = frRun1.gettext();
                         fFunc.setVar(new Base(varName, ret));
                         return "";
                     case "=":
@@ -292,7 +295,7 @@ namespace PSint
                         }
                         else
                             return "Error while launching function " + funcPath;
-                    case "#random"://random a b
+                    case "#random":///random a b
                         if (isCmd(param))
                         {
                             string[] sCmdPar = extractCmdParam(param);
@@ -314,8 +317,19 @@ namespace PSint
                         }
                         param = param.Replace("\\n", "\r\n");
                         param = param.Replace("==", "=");
-                        frRun1.textBox2.Text += param;
-                        frRun1.textBox2.Refresh();
+                        if (fFunc.sOutput == "Console")
+                        {
+                            frRun1.textBox2.Text += param;
+                            frRun1.textBox2.Refresh();
+                        }
+                        else
+                        {
+                            string sTimed; // This string using only for contain file name before it has been changing
+                            sTimed = dialSave.FileName;
+                            dialSave.FileName = fFunc.sOutput;
+                            SaveFile(param);
+                            dialSave.FileName = sTimed;
+                        }
                         return "";
 
                     case "#time":
