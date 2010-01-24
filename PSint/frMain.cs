@@ -18,6 +18,8 @@ namespace PSint
 
         private bool bTextChanged = false;
 
+        public bool bStartBreaking = false;
+
         public frMain()
         {
             InitializeComponent();
@@ -177,6 +179,7 @@ namespace PSint
         private void runToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             //MessageBox.Show("IT'S RUNNING!");
+            bStartBreaking = false;
             ShowRun();
             Func main = new Func(textBox1.Text);
             main.Run(this);
@@ -227,6 +230,7 @@ namespace PSint
             ///Here will be (switch), which will run functions for standart cmd signatures
             try
             {
+                if (bStartBreaking) { return ""; }
                 if ((cmd!="=")&&(cmd!="#in"))
                 {
                     param=processVars(param,fFunc);

@@ -215,7 +215,7 @@ namespace PSint
             code = s.Split(c);
         }
 
-        private int varExists(string sName)
+      private int varExists(string sName)
         {
             int retVal = -1;
             int counter = 0;
@@ -230,6 +230,7 @@ namespace PSint
             }
             return retVal;
         }
+        
 
         private void addVar(Base param)
         {
@@ -262,6 +263,11 @@ namespace PSint
         {
             for (int n = 0; n < code.Length; n++)
             {
+                if (frmain1.bStartBreaking) 
+                {
+                    break; 
+                }
+
                 String s = code[n];
                 s.Trim();
 

@@ -34,15 +34,14 @@ namespace PSint
             // 
             // textBox1
             // 
+            this.textBox1.BackColor = System.Drawing.Color.White;
             this.textBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.textBox1.Font = new System.Drawing.Font("Verdana", 9.75F);
             this.textBox1.Location = new System.Drawing.Point(0, 435);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(620, 23);
             this.textBox1.TabIndex = 0;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
-            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             // 
             // textBox2
             // 
@@ -56,7 +55,6 @@ namespace PSint
             this.textBox2.ReadOnly = true;
             this.textBox2.Size = new System.Drawing.Size(620, 435);
             this.textBox2.TabIndex = 1;
-            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // frRun
             // 
@@ -67,6 +65,7 @@ namespace PSint
             this.Controls.Add(this.textBox1);
             this.Name = "frRun";
             this.Text = "frRun";
+            this.Deactivate += new System.EventHandler(this.frRun_Deactivate);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -37,28 +37,25 @@ namespace PSint
             bGotText=false;
             this.Activate();
             this.textBox1.Focus();
-
+            this.textBox1.BackColor = Color.SkyBlue;
+            
             while (!bGotText)
             {
                 Application.DoEvents(); /// Processing new Events, for example user insert some text into textbox
                 System.Threading.Thread.Sleep(50); /// Waiting 50 mili-seconds
             }
-            MessageBox.Show(sEnteredText);
+
+            this.textBox1.BackColor = Color.White;
+          
+            
+          //  MessageBox.Show(sEnteredText);
             return sEnteredText;
         }
-        private void textBox1_TextChanged(object sender, EventArgs e)
+
+        private void frRun_Deactivate(object sender, EventArgs e)
         {
-
-        }
-
-        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
+            bGotText = true;
+            form1.bStartBreaking = true;
         }
 
     }
