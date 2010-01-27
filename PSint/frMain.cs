@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using System.Threading;
 
 namespace PSint
 {
@@ -23,6 +22,8 @@ namespace PSint
         public frMain()
         {
             InitializeComponent();
+            dialOpen.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+            dialSave.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -53,7 +54,9 @@ namespace PSint
         {
             LoadFile(dialOpen.FileName);
             bTextChanged = false;
+            dialSave.FileName = dialOpen.FileName;
         }
+
         /// <summary>
         /// Loads file with source to the textbox1. 
         /// </summary>
@@ -96,6 +99,7 @@ namespace PSint
         private void dialSave_FileOk(object sender, CancelEventArgs e)
         {
             SaveFile(dialSave.FileName);
+            dialOpen.FileName = dialSave.FileName;
         }
 
         /// <summary>
@@ -490,5 +494,6 @@ namespace PSint
                     frRun1.bGotText = true;
                 }
         }
+
     }
 }
