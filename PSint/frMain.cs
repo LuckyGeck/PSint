@@ -344,7 +344,7 @@ namespace PSint
                             string[] sCmdPar = extractCmdParam(param);
                             param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2], fFunc);
                         }
-                        Random rnd = new Random();
+                        Random rnd = new Random(DateTime.Now.Millisecond);
                         string[] par = param.Split(' ');
                         string ans = rnd.Next(Int32.Parse(par[0]), Int32.Parse(par[1])).ToString();
                         param = param.Substring(par[0].Length + 1 + par[1].Length);
