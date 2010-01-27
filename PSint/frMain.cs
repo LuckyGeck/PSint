@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -493,6 +494,11 @@ namespace PSint
                     frRun1.sEnteredText = s;
                     frRun1.bGotText = true;
                 }
+        }
+
+        private void onlineWikiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("http://wiki.github.com/LuckyGeck/PSint/");
         }
 
     }
