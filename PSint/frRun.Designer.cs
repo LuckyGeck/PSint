@@ -64,8 +64,8 @@ namespace PSint
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Name = "frRun";
-            this.Text = "frRun";
-            this.Deactivate += new System.EventHandler(this.frRun_Deactivate);
+            this.Text = "Console";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frRun_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

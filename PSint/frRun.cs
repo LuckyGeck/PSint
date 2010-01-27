@@ -56,7 +56,7 @@ namespace PSint
             return sEnteredText;
         }
 
-        private void frRun_Deactivate(object sender, EventArgs e)
+        private void frRun_FormClosing(object sender, FormClosingEventArgs e)
         {
             bGotText = true;
             form1.bStartBreaking = true;

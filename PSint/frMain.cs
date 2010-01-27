@@ -437,6 +437,7 @@ namespace PSint
             }
             return output;
         }
+
         /// <summary>
         /// Checks, if string contains commands at all.
         /// </summary>

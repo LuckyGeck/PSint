@@ -220,6 +220,10 @@ namespace PSint
             addConsts();
             char[] c = "\r\n".ToCharArray();
             code = sCode.Split(c);
+            /* foreach (string s in code) 
+            {
+                if (s == "") { code.}
+            }*/
             sInput = "Console";
             sOutput = "Console";
         }
@@ -350,8 +354,11 @@ namespace PSint
         /// <returns>If this function has return value, it returns this value.</returns>
         public string Run(frMain frmain1)
         {
+            bool bBreak = false;
             for (int n = 0; n < code.Length; n++)
             {
+                Application.DoEvents();
+
                 if (frmain1.bStartBreaking) 
                 {
                     break; 
@@ -373,14 +380,29 @@ namespace PSint
                         }
                         else
                             cmd = s;
-                        if (cmd == "#return")
+
+                        switch (cmd.ToLower())
                         {
-                            sReturn = frmain1.execCmd(cmd, param, this);
+                            case "#return":
+                                sReturn = frmain1.execCmd(cmd, param, this);
+                                break;
+                            case "#goto":
+                                int nLine = Convert.ToInt32(param.Trim().Split(' ')[0]);
+                                if (nLine > code.Length) 
+                                { 
+                                    frmain1.Error("Unreachable line - " + nLine.ToString(), n + 1); 
+                                    bBreak = true; 
+                                }
+                                else 
+                                {
+                                    n = nLine - 2;
+                                }
+                                break;
+                            default:
+                                frmain1.execCmd(cmd, param, this);
+                                break;
                         }
-                        else
-                        {
-                            frmain1.execCmd(cmd, param, this);
-                        }
+                        if (bBreak) break;
 
                     }
                     else
