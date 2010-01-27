@@ -54,11 +54,14 @@ namespace PSint
             LoadFile(dialOpen.FileName);
             bTextChanged = false;
         }
-
-        private void LoadFile(string p)
+        /// <summary>
+        /// Loads file with source to the textbox1. 
+        /// </summary>
+        /// <param name="sParam">Path to the file</param>
+        private void LoadFile(string sParam)
         {
-            textBox1.Text = File.ReadAllText(p, Encoding.UTF8);
-            path = p;
+            textBox1.Text = File.ReadAllText(sParam, Encoding.UTF8);
+            path = sParam;
             SetCaption();
         }
 
@@ -95,9 +98,13 @@ namespace PSint
             SaveFile(dialSave.FileName);
         }
 
-        private void SaveFile(string p)
+        /// <summary>
+        /// Saves Source File, that is opened in textbox1.
+        /// </summary>
+        /// <param name="sParam">Path to store this file.</param>
+        private void SaveFile(string sParam)
         {
-            FileStream FS = new FileStream(p, FileMode.Create);
+            FileStream FS = new FileStream(sParam, FileMode.Create);
 
             StreamWriter SW = new StreamWriter(FS);
             SW.Write(textBox1.Text);
@@ -105,11 +112,14 @@ namespace PSint
 
             FS.Close();
 
-            path = p;
+            path = sParam;
 
             SetCaption();
         }
 
+        /// <summary>
+        /// This method updates Caption of the Main form.
+        /// </summary>
         private void SetCaption()
         {
 
@@ -176,6 +186,9 @@ namespace PSint
 
         }
 
+        /// <summary>
+        /// This method runs main source file.
+        /// </summary>
         private void runToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             //MessageBox.Show("IT'S RUNNING!");
@@ -188,6 +201,9 @@ namespace PSint
             //HideRun();
         }
 
+        /// <summary>
+        /// THis method hides Run window.
+        /// </summary>
         private void HideRun()
         {
             frRun1.Hide();
@@ -195,7 +211,9 @@ namespace PSint
             bReadyToCloseRun = false;
             this.Show();
         }
-
+        /// <summary>
+        /// This method shows the Run window.
+        /// </summary>
         private void ShowRun()
         {
             bReadyToCloseRun = false;
@@ -203,12 +221,22 @@ namespace PSint
             frRun1.Show();
             frRun1.textBox2.Clear();
         }     
-
-        public void Error(string p, int n)
+        /// <summary>
+        /// This method shows the Error message.
+        /// </summary>
+        /// <param name="sParam">Error text.</param>
+        /// <param name="nLine">The number of the line, where the exception occured.</param>
+        public void Error(string sParam, int nLine)
         {
-            MessageBox.Show(p + "\nLine №" + n, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(sParam + "\nLine №" + nLine, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
+        /// <summary>
+        /// This method is processing vars.
+        /// </summary>
+        /// <param name="sParam">String with @vars.</param>
+        /// <param name="fFunc">The instance of Func class, which is currently running.</param>
+        /// <returns>String, where all @vars are changed to their values.</returns>
         private string processVars(string sParam, Func fFunc)
         {
             string sRet = "";
@@ -224,14 +252,21 @@ namespace PSint
             sRet = sRet.Trim();
             return sRet;
         }
-
+        
+        /// <summary>
+        /// This method executes one line of code.
+        /// </summary>
+        /// <param name="cmd">The name of command to execute.</param>
+        /// <param name="param">Parameters for this command</param>
+        /// <param name="fFunc">The instance of Func class, which is currently running.</param>
+        /// <returns>String, which is the result of executing this cmd. </returns>
         public string execCmd(string cmd, string param, Func fFunc)
         {
             ///Here will be (switch), which will run functions for standart cmd signatures
             try
             {
                 if (bStartBreaking) { return ""; }
-                if ((cmd!="=")&&(cmd!="#in"))
+                if ((cmd!="=")&&(cmd!="#in")) ///if we have cmd, that is not changing vars - then process them = change to thier values
                 {
                     param=processVars(param,fFunc);
                 }
@@ -369,26 +404,41 @@ namespace PSint
             }
         }
 
-        public String[] extractCmdParam(String s)
+        /// <summary>
+        /// This method extracts Params from one string to the array.
+        /// </summary>
+        /// <param name="sParams"></param>
+        /// <returns>The array, where: 
+        /// [0] = text, before cmd
+        /// [1] = cmd
+        /// [2] = text, after cmd
+        /// </returns>
+        public String[] extractCmdParam(String sParams)
         {
-            s = " " + s;
+            sParams = " " + sParams;
             String[] output = new string[3];
-            if (s.IndexOf(' ') >= 0)
+            if (sParams.IndexOf(' ') >= 0)
             {
-                output[0] = s.Substring(1, s.IndexOf(" #"));
-                s = s.Remove(0, s.IndexOf(" #") + 1);
-                output[1] = s.Substring(0, s.IndexOf(' '));
-                output[2] = s.Substring(s.IndexOf(' ') + 1);
+                output[0] = sParams.Substring(1, sParams.IndexOf(" #"));
+                sParams = sParams.Remove(0, sParams.IndexOf(" #") + 1);
+                output[1] = sParams.Substring(0, sParams.IndexOf(' '));
+                output[2] = sParams.Substring(sParams.IndexOf(' ') + 1);
             }
             else
             {
                 output[0] = "";
-                output[1] = s;
+                output[1] = sParams;
                 output[2] = "";
             }
             return output;
         }
-
+        /// <summary>
+        /// Checks, if string contains commands at all.
+        /// </summary>
+        /// <param name="param">String which if looked up for cmd's</param>
+        /// <returns>True - there are cmd's.
+        /// False - there are no cmd's.
+        /// </returns>
         private bool isCmd(string param)
         {
             param = " " + param;
@@ -426,7 +476,6 @@ namespace PSint
         {
             textBox1.Paste();
         }
-
 
         internal void inKbrd(string s)
         {

@@ -32,6 +32,10 @@ namespace PSint
             }            
         }
 
+        /// <summary>
+        /// Method, which gets a text, entered by user.
+        /// </summary>
+        /// <returns>Entered text.</returns>
         public string gettext()
         {
             bGotText=false;

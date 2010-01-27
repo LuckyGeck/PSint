@@ -14,19 +14,30 @@ namespace PSint
         private string str;
         private string use; // Show using part of class: Long - lg, Double - db, String - str, Empty - nothing, Error - error;
 
+        /// <summary>
+        /// Constructor of clear object.
+        /// </summary>
         public Base()
         {
             Clear();
         }
         
-
-        public Base(string Rname)
+        /// <summary>
+        /// Constructor of an empty var with a particular name.
+        /// </summary>
+        /// <param name="sName">Name of the var.</param>
+        public Base(string sName)
         {
             Clear();
-            name = Rname;
+            name = sName;
             use = "Empty";
         }
         
+        /// <summary>
+        /// Constructor of a longint-typed var.
+        /// </summary>
+        /// <param name="sName">Name of the var.</param>
+        /// <param name="lParam">Value of the var (longint)</param>
         public Base(string sName,long lParam)
         {
             Clear();
@@ -34,7 +45,12 @@ namespace PSint
             name = sName;
             use = "Long";           
         }
-        
+
+        /// <summary>
+        /// Constructor of a double-typed var.
+        /// </summary>
+        /// <param name="sName">Name of the var.</param>
+        /// <param name="dParam">Value of the var (double)</param>
         public Base(string sName,double dParam)
         {
             Clear();
@@ -42,7 +58,12 @@ namespace PSint
             name = sName;
             use = "Double";
         }
-        
+
+        /// <summary>
+        /// Constructor of a string-typed var.
+        /// </summary>
+        /// <param name="sName">Name of the var.</param>
+        /// <param name="sParam">Value of the var (string)</param>
         public Base(string sName,String sParam)
         {
             Clear();
@@ -50,6 +71,11 @@ namespace PSint
             name = sName;
             use = "String";
         }
+
+        /// <summary>
+        /// Constructor, which creates a clone of a particular var.
+        /// </summary>
+        /// <param name="bParam">Var to clone.</param>
         public Base(Base bParam)
         {
             Clear();
@@ -60,12 +86,28 @@ namespace PSint
             str = bParam.str;
         }
 
+        /// <summary>
+        /// Sets a string value.
+        /// </summary>
+        /// <param name="sParam">Value of the var.</param>
         public void Set(String sParam) { str = sParam; use = "String"; }
 
+        /// <summary>
+        /// Sets longint value to the var.
+        /// </summary>
+        /// <param name="lParam">Longint value.</param>
         public void Set(long lParam) { lg = lParam; use = "Long"; }
 
+        /// <summary>
+        /// Sets a double value to the var
+        /// </summary>
+        /// <param name="dParam">Double value of the var.</param>
         public void Set(double dParam) { db = dParam; use = "Double"; }
 
+        /// <summary>
+        /// Sets a value to the var by copying it form another var.
+        /// </summary>
+        /// <param name="bParam">Base var to get value from.</param>
         public void Set(Base bParam) 
         { 
             str = bParam.str;
@@ -74,6 +116,10 @@ namespace PSint
             use = bParam.use;        
         }
         
+        /// <summary>
+        /// Gets a value of the var.
+        /// </summary>
+        /// <returns>Value of the var.</returns>
         public string Get()
         {
             switch (use)
@@ -88,7 +134,10 @@ namespace PSint
             }
         }
 
-        public void Clear() // Change variable value to null. Name doesn't change
+        /// <summary>
+        /// Change var's value to null. Name doesn't change
+        /// </summary>
+        public void Clear() 
         {
             use = "Empty";
             lg = 0;
@@ -148,6 +197,7 @@ namespace PSint
             return c;
         }
     }
+
     public class Func
     {
         static public List<Base> globalVrb;
@@ -158,16 +208,25 @@ namespace PSint
         private string[] code;
         //  private int nPos;
         public string sReturn = "";
-        private string[] sParams;
-        public Func(String s)
+        private string[] sParams; 
+
+        /// <summary>
+        /// Constructor for Func class. 
+        /// (Without init params)
+        /// </summary>
+        /// <param name="sCode">Source of the function.</param>
+        public Func(String sCode)
         {
             addConsts();
             char[] c = "\r\n".ToCharArray();
-            code = s.Split(c);
+            code = sCode.Split(c);
             sInput = "Console";
             sOutput = "Console";
         }
 
+        /// <summary>
+        /// This method inits Vars list and adds consts to it.
+        /// </summary>
         private void addConsts()
         {
             vrb = new List<Base>();
@@ -177,7 +236,12 @@ namespace PSint
             vrb.Add(new Base("@authors", "Pavel Sychev and Semen Mikheynok"));
         }
 
-        public Func(String s, String sParam)
+        /// <summary>
+        /// Constructor for Func class. 
+        /// </summary>
+        /// <param name="sCode">Source of the function.</param>
+        /// <param name="sParam">Init params for this function.</param>
+        public Func(String sCode, String sParam)
         {
             addConsts();
             sInput = "Console";
@@ -212,10 +276,17 @@ namespace PSint
 
             }
             char[] c = "\r\n".ToCharArray();
-            code = s.Split(c);
+            code = sCode.Split(c);
         }
 
-      private int varExists(string sName)
+        /// <summary>
+        /// Checks if a var with sName already exists.
+        /// </summary>
+        /// <param name="sName">Name of var to search.</param>
+        /// <returns>It such var doesn't exist, it returns -1.
+        /// If such var exists - it returns Zero-Based number of this var in List.
+        /// </returns>
+        private int varExists(string sName)
         {
             int retVal = -1;
             int counter = 0;
@@ -231,7 +302,10 @@ namespace PSint
             return retVal;
         }
         
-
+        /// <summary>
+        /// Makes a copy of param var and adds it to the List. 
+        /// </summary>
+        /// <param name="param">Base-type variable.</param>
         private void addVar(Base param)
         {
 
@@ -241,6 +315,11 @@ namespace PSint
             }
         }
 
+        /// <summary>
+        /// Sets the value of param to var from the list, which name is equal to param's name.
+        /// If such var in list doesn't exists - it is added. 
+        /// </summary>
+        /// <param name="param">Base-type variable</param>
         public void setVar(Base param)
         {
             int nNum = varExists(param.name);
@@ -248,6 +327,11 @@ namespace PSint
             else vrb[nNum].Set(param);
         }
 
+        /// <summary>
+        /// Gets the value of var from the list with the name equal to sName
+        /// </summary>
+        /// <param name="sName">The name of the param to get.</param>
+        /// <returns>Value of var</returns>
         public string getVar(string sName)
         {
             int nNum = varExists(sName);
@@ -259,6 +343,11 @@ namespace PSint
             return vrb[nNum].Get();
         }
 
+        /// <summary>
+        /// This method Runs the function.
+        /// </summary>
+        /// <param name="frmain1">Link to the main form.</param>
+        /// <returns>If this function has return value, it returns this value.</returns>
         public string Run(frMain frmain1)
         {
             for (int n = 0; n < code.Length; n++)
@@ -307,9 +396,5 @@ namespace PSint
             return sReturn;
 
         }
-    }
-
-    public class Methods
-    {
     }
 }
