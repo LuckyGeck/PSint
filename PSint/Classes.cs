@@ -218,12 +218,9 @@ namespace PSint
         public Func(String sCode)
         {
             addConsts();
-            char[] c = "\r\n".ToCharArray();
-            code = sCode.Split(c);
-            /* foreach (string s in code) 
-            {
-                if (s == "") { code.}
-            }*/
+            string[] c = new string[1];
+            c[0]="\r\n";
+            code = sCode.Split(c,System.StringSplitOptions.None);
             sInput = "Console";
             sOutput = "Console";
         }
@@ -279,8 +276,9 @@ namespace PSint
                 }
 
             }
-            char[] c = "\r\n".ToCharArray();
-            code = sCode.Split(c);
+            string[] c = new string[1];
+            c[0] = "\r\n";
+            code = sCode.Split(c, System.StringSplitOptions.None);
         }
 
         /// <summary>
