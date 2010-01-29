@@ -208,7 +208,8 @@ namespace PSint
         private string[] code;
         //  private int nPos;
         public string sReturn = "";
-        private string[] sParams; 
+        private string[] sParams;
+        private List<int> nIfStack;
 
         /// <summary>
         /// Constructor for Func class. 
@@ -218,11 +219,12 @@ namespace PSint
         public Func(String sCode)
         {
             addConsts();
+            nIfStack = new List<int>();
+            sInput = "Console";
+            sOutput = "Console";
             string[] c = new string[1];
             c[0]="\r\n";
             code = sCode.Split(c,System.StringSplitOptions.None);
-            sInput = "Console";
-            sOutput = "Console";
         }
 
         /// <summary>
@@ -245,6 +247,7 @@ namespace PSint
         public Func(String sCode, String sParam)
         {
             addConsts();
+            nIfStack = new List<int>();
             sInput = "Console";
             sOutput = "Console";
             if (sParam != "")
@@ -353,6 +356,7 @@ namespace PSint
         public string Run(frMain frmain1)
         {
             bool bBreak = false;
+            bool bEndIfSearch = false;
             for (int n = 0; n < code.Length; n++)
             {
                 Application.DoEvents();
@@ -381,10 +385,37 @@ namespace PSint
 
                         switch (cmd.ToLower())
                         {
+                            case "#if":
+                                nIfStack.Add(n);
+
+                                if (!bEndIfSearch) //if we must process this if
+                                {
+                                    if (!frmain1.processLogicalSeq(param, this)) // param=>false
+                                    { 
+                                        bEndIfSearch = true; 
+                                    }
+                                }
+                                break;
+                            case "#endif":
+                                if (bEndIfSearch)
+                                {
+                                    nIfStack.Remove(nIfStack.Max());
+                                    if (nIfStack.Count == 0) 
+                                    {
+                                        bEndIfSearch = false;
+                                    }
+                                }
+                                else 
+                                {
+                                    n = nIfStack.Max() - 1; 
+                                }
+                                break;
                             case "#return":
+                                if (bEndIfSearch) break;
                                 sReturn = frmain1.execCmd(cmd, param, this);
                                 break;
                             case "#goto":
+                                if (bEndIfSearch) break;
                                 int nLine = Convert.ToInt32(param.Trim().Split(' ')[0]);
                                 if (nLine > code.Length) 
                                 { 
@@ -397,6 +428,7 @@ namespace PSint
                                 }
                                 break;
                             default:
+                                if (bEndIfSearch) break;
                                 frmain1.execCmd(cmd, param, this);
                                 break;
                         }

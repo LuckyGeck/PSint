@@ -257,6 +257,17 @@ namespace PSint
             sRet = sRet.Trim();
             return sRet;
         }
+
+        /// <summary>
+        /// This method process some logical sequence and returns result - is it true or false.
+        /// </summary>
+        /// <param name="sParam">Some sequence</param>
+        /// <param name="fFunc">Func class instance</param>
+        /// <returns>Is this seq. true or false.</returns>
+        public bool processLogicalSeq(string sParam, Func fFunc) 
+        {
+            return true;
+        }
         
         /// <summary>
         /// This method executes one line of code.
@@ -283,6 +294,7 @@ namespace PSint
                         string ret = frRun1.gettext();
                         fFunc.setVar(new Base(varName, ret));
                         return "";
+
                     case "=":
                         string var1Name = param.Split(' ')[0];
                         param = param.Substring(var1Name.Length + 1);
