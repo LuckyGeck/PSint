@@ -436,14 +436,34 @@ namespace PSint
 
                 switch (cmd.ToLower())
                 {
+                    case "#outstream":
+                        param = processVars(param, fFunc);
+                        fFunc.sOutput = param.Trim();
+                        return "";
+                    case "#instream":
+                        param = processVars(param, fFunc);
+                        fFunc.sInput = param.Trim();
+                        return "";
                     case "#temp": // this cmd is used only for testing some features, i.e. processing simple seq.
                         param = processSimpleSeq(param, fFunc);
                         frRun1.textBox2.Text += param;
                         frRun1.textBox2.Refresh();
                         return "";
                     case "#in":
+                        string ret = "";
                         string varName = param.Split(' ')[0];
-                        string ret = frRun1.gettext();
+                        if (fFunc.sInput.ToLower() == "console")
+                        {
+                            ret = frRun1.gettext();
+                        }
+                        else 
+                        {
+                            FileStream FS = new FileStream(fFunc.sInput, FileMode.OpenOrCreate);
+                            StreamReader SR = new StreamReader(FS);
+                            ret = SR.ReadToEnd();
+                            SR.Close();
+                            FS.Close();
+                        }
 
                         if (varName.IndexOf('@') == 0) //local var
                         {
@@ -543,18 +563,18 @@ namespace PSint
                         }
                         param = param.Replace("\\n", "\r\n");
                         param = param.Replace("==", "=");
-                        if (fFunc.sOutput == "Console")
+                        if (fFunc.sOutput.ToLower() == "console")
                         {
                             frRun1.textBox2.Text += param;
                             frRun1.textBox2.Refresh();
                         }
                         else
                         {
-                            string sTimed; // This string using only for contain file name before it has been changing
-                            sTimed = dialSave.FileName;
-                            dialSave.FileName = fFunc.sOutput;
-                            SaveFile(param);
-                            dialSave.FileName = sTimed;
+                            FileStream FS = new FileStream(fFunc.sOutput.Trim(), FileMode.OpenOrCreate);
+                            StreamWriter SW = new StreamWriter(FS);
+                            SW.Write(param);
+                            SW.Close();
+                            FS.Close();
                         }
                         return "";
 
