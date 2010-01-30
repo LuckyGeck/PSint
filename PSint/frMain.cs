@@ -264,6 +264,60 @@ namespace PSint
             sRet = sRet.Trim();
             return sRet;
         }
+        
+        /// <summary>
+        /// Method, processing simple sequence - A <+,-,*,/> B
+        /// </summary>
+        /// <param name="sParam">Sequence</param>
+        /// <param name="fFunc">Func class instance</param>
+        /// <returns>Result of the sequence.</returns>
+        private string processSimpleSeq(string sParam, Func fFunc) 
+        {
+            if (sParam.IndexOf('+') > -1)
+            {
+                string[] sSeqParams = sParam.Split('+');
+                Base a = new Base();
+                a.SetUntyped(sSeqParams[0].Trim());
+                Base b = new Base();
+                b.SetUntyped(sSeqParams[1].Trim());
+                Base c = a + b;
+                return c.Get();
+            }
+            else
+                if (sParam.IndexOf('-') > -1)
+                {
+                    string[] sSeqParams = sParam.Split('-');
+                    Base a = new Base();
+                    a.SetUntyped(sSeqParams[0].Trim());
+                    Base b = new Base();
+                    b.SetUntyped(sSeqParams[1].Trim());
+                    Base c = a - b;
+                    return c.Get();
+                }
+                else
+                    if (sParam.IndexOf('*') > -1)
+                    {
+                        string[] sSeqParams = sParam.Split('*');
+                        Base a = new Base();
+                        a.SetUntyped(sSeqParams[0].Trim());
+                        Base b = new Base();
+                        b.SetUntyped(sSeqParams[1].Trim());
+                        Base c = a * b;
+                        return c.Get();
+                    }
+                    else
+                        if (sParam.IndexOf('/') > -1)
+                        {
+                            string[] sSeqParams = sParam.Split('/');
+                            Base a = new Base();
+                            a.SetUntyped(sSeqParams[0].Trim());
+                            Base b = new Base();
+                            b.SetUntyped(sSeqParams[1].Trim());
+                            Base c = a / b;
+                            return c.Get();
+                        }
+                        else return sParam;
+        }
 
         /// <summary>
         /// This method process some logical sequence and returns result - is it true or false.
@@ -296,6 +350,11 @@ namespace PSint
 
                 switch (cmd.ToLower())
                 {
+                    case "#temp": // this cmd is used only for testing some features, i.e. processing simple seq.
+                        param = processSimpleSeq(param, fFunc);
+                        frRun1.textBox2.Text += param;
+                        frRun1.textBox2.Refresh();
+                        return "";
                     case "#in":
                         string varName = param.Split(' ')[0];
                         string ret = frRun1.gettext();

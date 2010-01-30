@@ -115,6 +115,43 @@ namespace PSint
             db = bParam.db;
             use = bParam.use;        
         }
+
+        /// <summary>
+        /// Sets a var value of unknown type (type of var is automaticly checked)
+        /// Unnamed var.
+        /// </summary>
+        /// <param name="sParam">Var value</param>
+        public void SetUntyped(string sParam) 
+        {
+            SetUntyped("Unnamed", sParam);
+        }
+
+        /// <summary>
+        /// Sets a var value of unknown type (type of var is automaticly checked)
+        /// </summary>
+        /// <param name="sName">Var name</param>
+        /// <param name="sParam">Var value</param>
+        public void SetUntyped(string sName, string sParam)
+        {
+            name = sName;
+
+            long lg;
+            double db;
+
+            if (long.TryParse(sParam, out lg))
+            {
+                Set(lg);
+            }
+            else
+                if (double.TryParse(sParam, out db))
+                {
+                    Set(db);
+                }
+                else
+                {
+                    Set(sParam);
+                } 
+        }
         
         /// <summary>
         /// Gets a value of the var.
@@ -153,6 +190,7 @@ namespace PSint
                c.lg = a.lg + b.lg;
                c.db = a.db + b.db;
                c.str= a.str + b.str;
+               c.use = a.use;
             }
             return c;
         }
@@ -163,6 +201,7 @@ namespace PSint
             {
                 c.lg = a.lg - b.lg;
                 c.db = a.db - b.db;
+                c.use = a.use;
                 /*while (a.str.IndexOf(b.str) != -1)
                 {
                     a.str.Remove(a.str.IndexOf(b.str), a.str.IndexOf(b.str) + b.str.Length);
@@ -180,6 +219,7 @@ namespace PSint
                 if(a.use == "Double")
                     c.db = a.db * b.db;
                 //a.str *= b.str;
+                c.use = a.use;
             }
             return c;
         }
@@ -193,6 +233,7 @@ namespace PSint
                 if (a.use == "Double")
                     c.db = a.db + b.db;
                 //a.str /= b.str;
+                c.use = a.use;
             }
             return c;
         }
