@@ -237,6 +237,103 @@ namespace PSint
             }
             return c;
         }
+
+        public static bool operator <(Base a, Base b) 
+        {
+            bool answer = false;
+            if (a.use == b.use)
+            {
+                if (a.use == "Long")
+                    answer = (a.lg < b.lg);
+                else                
+                    if (a.use == "Double")
+                        answer = (a.db < b.db);
+                    else
+                        if (a.use == "String")
+                            answer = (a.str.Length < b.str.Length);
+            }
+            return answer;
+        }
+        public static bool operator >(Base a, Base b)
+        {
+            bool answer = false;
+            if (a.use == b.use)
+            {
+                if (a.use == "Long")
+                    answer = (a.lg > b.lg);
+                else
+                    if (a.use == "Double")
+                        answer = (a.db > b.db);
+                    else
+                        if (a.use == "String")
+                            answer = (a.str.Length > b.str.Length);
+            }
+            return answer;
+        }
+        public static bool operator >=(Base a, Base b)
+        {
+            bool answer = false;
+            if (a.use == b.use)
+            {
+                if (a.use == "Long")
+                    answer = (a.lg >= b.lg);
+                else
+                    if (a.use == "Double")
+                        answer = (a.db >= b.db);
+                    else
+                        if (a.use == "String")
+                            answer = (a.str.Length >= b.str.Length);
+            }
+            return answer;
+        }
+        public static bool operator <=(Base a, Base b)
+        {
+            bool answer = false;
+            if (a.use == b.use)
+            {
+                if (a.use == "Long")
+                    answer = (a.lg <= b.lg);
+                else
+                    if (a.use == "Double")
+                        answer = (a.db <= b.db);
+                    else
+                        if (a.use == "String")
+                            answer = (a.str.Length <= b.str.Length);
+            }
+            return answer;
+        }
+        public static bool operator !=(Base a, Base b)
+        {
+            bool answer = false;
+            if (a.use == b.use)
+            {
+                if (a.use == "Long")
+                    answer = (a.lg != b.lg);
+                else
+                    if (a.use == "Double")
+                        answer = (a.db != b.db);
+                    else
+                        if (a.use == "String")
+                            answer = (a.str != b.str);
+            }
+            return answer;
+        }
+        public static bool operator ==(Base a, Base b)
+        {
+            bool answer = false;
+            if (a.use == b.use)
+            {
+                if (a.use == "Long")
+                    answer = (a.lg == b.lg);
+                else
+                    if (a.use == "Double")
+                        answer = (a.db == b.db);
+                    else
+                        if (a.use == "String")
+                            answer = (a.str == b.str);
+            }
+            return answer;
+        }
     }
 
     public class Func
@@ -251,6 +348,7 @@ namespace PSint
         public string sReturn = "";
         private string[] sParams;
         private List<int> nIfStack;
+        private List<int> nWhileStack;
 
         /// <summary>
         /// Constructor for Func class. 
@@ -261,6 +359,7 @@ namespace PSint
         {
             addConsts();
             nIfStack = new List<int>();
+            nWhileStack = new List<int>();
             sInput = "Console";
             sOutput = "Console";
             string[] c = new string[1];
@@ -289,6 +388,7 @@ namespace PSint
         {
             addConsts();
             nIfStack = new List<int>();
+            nWhileStack = new List<int>();
             sInput = "Console";
             sOutput = "Console";
             if (sParam != "")
@@ -462,6 +562,8 @@ namespace PSint
         {
             bool bBreak = false;
             bool bEndIfSearch = false;
+            bool bEndWhile = false;
+
             for (int n = 0; n < code.Length; n++)
             {
                 Application.DoEvents();
@@ -490,9 +592,34 @@ namespace PSint
 
                         switch (cmd.ToLower())
                         {
+                            case "#while":
+                                nWhileStack.Add(n);
+
+                                if (!bEndWhile) //if we must process this if
+                                {
+                                    if (!frmain1.processLogicalSeq(param, this)) // param=>false
+                                    {
+                                        bEndWhile = true;
+                                    }
+                                }
+                                break;
+                            case "#endwhile":
+                                if (bEndWhile)
+                                {
+                                    nWhileStack.Remove(nWhileStack.Max());
+                                    if (nWhileStack.Count == 0)
+                                    {
+                                        bEndWhile = false;
+                                    }
+                                }
+                                else 
+                                {
+                                    n = nWhileStack.Max() - 1;
+                                    nWhileStack.Remove(nWhileStack.Max());
+                                }
+                                break;
                             case "#if":
                                 nIfStack.Add(n);
-
                                 if (!bEndIfSearch) //if we must process this if
                                 {
                                     if (!frmain1.processLogicalSeq(param, this)) // param=>false
@@ -502,18 +629,11 @@ namespace PSint
                                 }
                                 break;
                             case "#endif":
-                                if (bEndIfSearch)
-                                {
                                     nIfStack.Remove(nIfStack.Max());
                                     if (nIfStack.Count == 0) 
                                     {
                                         bEndIfSearch = false;
                                     }
-                                }
-                                else 
-                                {
-                                    n = nIfStack.Max() - 1; 
-                                }
                                 break;
                             case "#return":
                                 if (bEndIfSearch) break;

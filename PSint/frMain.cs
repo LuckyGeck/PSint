@@ -327,7 +327,93 @@ namespace PSint
         /// <returns>Is this seq. true or false.</returns>
         public bool processLogicalSeq(string sParam, Func fFunc) 
         {
-            return true;
+            bool answer = false;
+
+            string[] logicalMarks = new string[6] {"<",">","<=",">=","==","!="};
+            string[] sParams = sParam.Split(logicalMarks, StringSplitOptions.None);
+            if (sParams.Length != 1) 
+            {
+                string usedLogic = sParam.Substring(sParams[0].Length, sParam.Length - sParams[0].Length - sParams[1].Length).Trim();
+                sParams[0] = processComplicatedSeq(sParams[0].Trim());
+                sParams[1] = processComplicatedSeq(sParams[1].Trim());
+                Base a = new Base();
+                a.SetUntyped(sParams[0]);
+                Base b = new Base();
+                b.SetUntyped(sParams[1]);
+
+                switch (usedLogic)
+                {
+                    case "<":
+                        answer = (a < b);
+                        break;
+                    case ">":
+                        answer = (a > b);
+                        break;
+                    case "<=":
+                        answer = (a <= b);
+                        break;
+                    case ">=":
+                        answer = (a >= b);
+                        break;
+                    case "!=":
+                        answer = (a != b);
+                        break;
+                    case "==":
+                        answer = (a == b);
+                        break;
+                }
+            }
+            else
+                switch (sParams[0][0])
+                {
+                    case '@':
+                        try
+                        {
+                            answer = Convert.ToBoolean(fFunc.getVar(sParams[0].Trim()));
+                        }
+                        catch
+                        {
+                            answer = false;
+                        }
+                        break;
+                    case '&':
+                        try
+                        {
+                            answer = Convert.ToBoolean(fFunc.getGlVar(sParams[0].Trim()));
+                        }
+                        catch
+                        {
+                            answer = false;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                
+            return answer;
+        }
+
+        /// <summary>
+        /// This method processes Complicated seq.
+        /// </summary>
+        /// <param name="sParam">Complicated seq.</param>
+        /// <returns>Result of calculating this seq.</returns>
+        private string processComplicatedSeq(string sParam)
+        {
+            sParam = setBrackets(sParam);
+            ///Here will be your code
+            return sParam;
+        }
+
+        /// <summary>
+        /// This method sets all brackets needed in this seq.
+        /// </summary>
+        /// <param name="sParam">Unparsed seq.</param>
+        /// <returns>Seq. with brackets.</returns>
+        private string setBrackets(string sParam)
+        {
+            ///Here will be your code
+            return sParam;
         }
         
         /// <summary>
