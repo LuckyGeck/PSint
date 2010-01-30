@@ -200,7 +200,7 @@ namespace PSint
 
     public class Func
     {
-        static public List<Base> globalVrb;
+        static public List<Base> globalVrb = new List<Base>();
         private List<Base> vrb; // Variable
         public string sInput;
         public string sOutput;
@@ -346,6 +346,70 @@ namespace PSint
                 return "";
             }
             return vrb[nNum].Get();
+        }
+
+        /// <summary>
+        /// Checks if a global var with sName already exists.
+        /// </summary>
+        /// <param name="sName">Name of var to search.</param>
+        /// <returns>It such var doesn't exist, it returns -1.
+        /// If such var exists - it returns Zero-Based number of this var in List.
+        /// </returns>
+        private int varGlExists(string sName)
+        {
+            int retVal = -1;
+            int counter = 0;
+            foreach (Base b in globalVrb)
+            {
+                if (b.name == sName)
+                {
+                    retVal = counter;
+                    return retVal;
+                }
+                counter++;
+            }
+            return retVal;
+        }
+
+        /// <summary>
+        /// Makes a copy of param global var and adds it to the List. 
+        /// </summary>
+        /// <param name="param">Base-type variable.</param>
+        private void addGlVar(Base param)
+        {
+
+            if (varGlExists(param.name) == -1)
+            {
+                globalVrb.Add(new Base(param));
+            }
+        }
+
+        /// <summary>
+        /// Sets the value of param to global var from the list, which name is equal to param's name.
+        /// If such var in list doesn't exists - it is added. 
+        /// </summary>
+        /// <param name="param">Base-type variable</param>
+        public void setGlVar(Base param)
+        {
+            int nNum = varGlExists(param.name);
+            if (nNum == -1) { addGlVar(param); }
+            else globalVrb[nNum].Set(param);
+        }
+
+        /// <summary>
+        /// Gets the value of global var from the list with the name equal to sName
+        /// </summary>
+        /// <param name="sName">The name of the param to get.</param>
+        /// <returns>Value of var</returns>
+        public string getGlVar(string sName)
+        {
+            int nNum = varGlExists(sName);
+            if (nNum == -1)
+            {
+                addGlVar(new Base("", sName));
+                return "";
+            }
+            return globalVrb[nNum].Get();
         }
 
         /// <summary>

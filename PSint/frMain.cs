@@ -55,7 +55,8 @@ namespace PSint
         {
             LoadFile(dialOpen.FileName);
             bTextChanged = false;
-            dialSave.FileName = dialOpen.FileName;
+            dialSave.InitialDirectory = Path.GetDirectoryName(dialOpen.FileName);
+            dialOpen.InitialDirectory = dialSave.InitialDirectory;
         }
 
         /// <summary>
@@ -100,7 +101,8 @@ namespace PSint
         private void dialSave_FileOk(object sender, CancelEventArgs e)
         {
             SaveFile(dialSave.FileName);
-            dialOpen.FileName = dialSave.FileName;
+            dialOpen.InitialDirectory = Path.GetDirectoryName(dialSave.FileName);
+            dialSave.InitialDirectory = dialOpen.InitialDirectory;
         }
 
         /// <summary>
@@ -248,11 +250,16 @@ namespace PSint
             string[] splitParam = sParam.Split(' ');
             foreach (string s in splitParam)
             {
-                if (s.IndexOf('@') == 0)
+                if (s.IndexOf('@') == 0) // if local var
                 {
                     sRet += fFunc.getVar(s) + " ";
                 }
-                else sRet += s+ " ";
+                else
+                    if (s.IndexOf('&') == 0) //if global var
+                    {
+                        sRet += fFunc.getGlVar(s) + " ";
+                    }
+                    else sRet += s + " ";
             }
             sRet = sRet.Trim();
             return sRet;
@@ -292,7 +299,17 @@ namespace PSint
                     case "#in":
                         string varName = param.Split(' ')[0];
                         string ret = frRun1.gettext();
-                        fFunc.setVar(new Base(varName, ret));
+
+                        if (varName.IndexOf('@') == 0) //local var
+                        {
+                            fFunc.setVar(new Base(varName, ret));
+                        }
+                        else
+                            if (varName.IndexOf('&') == 0) //global var
+                            {
+                                fFunc.setGlVar(new Base(varName, ret));
+                            }
+
                         return "";
 
                     case "=":
@@ -322,8 +339,16 @@ namespace PSint
                             {
                                 b = new Base(var1Name, param);
                             }
-
-                        fFunc.setVar(b);
+                       
+                            if (var1Name.IndexOf('@') == 0)
+                        {
+                            fFunc.setVar(b);
+                        }
+                        else
+                            if (var1Name.IndexOf('&') == 0)
+                            {
+                                fFunc.setGlVar(b);
+                            }
 
                         return "";
 
@@ -398,9 +423,9 @@ namespace PSint
                         return DateTime.Now.TimeOfDay + " " + param;
 
                     case "#sleep":
-
                         System.Threading.Thread.Sleep(Int32.Parse(param));
                         return "";
+
                     case "#return":
                         if (isCmd(param))
                         {
@@ -417,7 +442,7 @@ namespace PSint
             }
             catch
             {
-                return "!Error!";
+                return "Parse_Error! Unknown command!";
             }
         }
 
