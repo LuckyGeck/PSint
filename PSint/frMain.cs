@@ -248,22 +248,6 @@ namespace PSint
         public string processVars(string sParam, Func fFunc)
         {
             string sRet = "";
-            bool flag;
-            char[] Marks = new char[] { '*', '/', '+', '-' , ' ' , '(' , ')'}; // now space button - is the now onlyist way to split string
-            for (int i = sParam.Length - 1; i >= 0; i--)
-            {
-                flag = false;
-                foreach (char cNow in Marks)
-                {
-                    if (cNow == sParam[i])
-                        flag = true;
-                }
-                if (flag)
-                {
-                    sParam = sParam.Insert(i+1, " ");
-                    sParam = sParam.Insert(i, " ");
-                }
-            }
             string[] splitParam = sParam.Split(' ');
             foreach (string s in splitParam)
             {
@@ -346,13 +330,13 @@ namespace PSint
         {
             bool answer = false;
 
-            string[] logicalMarks = new string[6] {"<",">","<=",">=","==","!="};
+            string[] logicalMarks = new string[6] { "<=", ">=", "==", "!=", "<", ">"};
             string[] sParams = sParam.Split(logicalMarks, StringSplitOptions.None);
             if (sParams.Length != 1) 
             {
                 string usedLogic = sParam.Substring(sParams[0].Length, sParam.Length - sParams[0].Length - sParams[1].Length).Trim();
-                sParams[0] = processComplicatedSeq(sParams[0].Trim());
-                sParams[1] = processComplicatedSeq(sParams[1].Trim());
+                sParams[0] = processComplicatedSeq(processVars(sParams[0].Trim(),fFunc));
+                sParams[1] = processComplicatedSeq(processVars(sParams[1].Trim(),fFunc));
                 Base a = new Base();
                 a.SetUntyped(sParams[0]);
                 Base b = new Base();
@@ -423,7 +407,7 @@ namespace PSint
             int iLast;
 
             string sRewrite;
-            sParam.Trim();
+            sParam = sParam.Trim();
             while (sParam.IndexOf('(') != -1)
             {
                 for (int i = 0; i < sParam.Length; i++)
@@ -599,8 +583,11 @@ namespace PSint
                         param = param.Trim();
 
                         if (param[0] == '(' && param[param.Length - 1] == ')')
+                        {
+                            param = processBlanks(param, fFunc);
+                            param = processVars(param, fFunc);
                             param = processComplicatedSeq(param);
-
+                        }
                         long lg;
                         double db;
                         Base b;
@@ -638,9 +625,22 @@ namespace PSint
                         }
                         string funcPath = param.Split(' ')[0];
                         param = param.Substring(param.IndexOf(' ') + 1);
-                        if (File.Exists(Path.GetDirectoryName(path) + "\\" + funcPath + ".ps"))
+                        string fullPath="";
+
+                        if (path.Trim() != "")
                         {
-                            string fullPath = Path.GetDirectoryName(path) + "\\" + funcPath + ".ps";
+                            if (File.Exists(Path.GetDirectoryName(path) + "\\" + funcPath + ".ps"))
+                            {
+                                fullPath = Path.GetDirectoryName(path) + "\\" + funcPath + ".ps";
+                            }
+                        }
+                        if (fullPath=="")
+                            if (File.Exists(Path.GetDirectoryName(Application.ExecutablePath) + "\\" + funcPath + ".ps"))
+                            {
+                                fullPath = Path.GetDirectoryName(Application.ExecutablePath) + "\\" + funcPath + ".ps";
+                            }
+                        if (fullPath!="")
+                        {
                             FileStream FS = new FileStream(fullPath, FileMode.OpenOrCreate);
 
                             StreamReader SR = new StreamReader(FS);
@@ -674,8 +674,13 @@ namespace PSint
                             string[] sCmdPar = extractCmdParam(param);
                             param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2],fFunc);
                         }
+                        ///DELETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         if (param[0] == '(' && param[param.Length - 1] == ')')
+                        {
+                            param = processBlanks(param, fFunc);
+                            param = processVars(param, fFunc);
                             param = processComplicatedSeq(param);
+                        }
                         param = param.Replace("\\n", "\r\n");
                         param = param.Replace("==", "=");
                         if (fFunc.sOutput.ToLower() == "console")
@@ -719,8 +724,7 @@ namespace PSint
                         return param;
 
                     default:
-
-                        throw new Exception("Err");
+                        return execCmd("#function", cmd.Remove(0,1) + " " + param, fFunc);
                     //  return "Err";
                 }
             }
@@ -823,5 +827,27 @@ namespace PSint
             Process.Start("http://wiki.github.com/LuckyGeck/PSint/");
         }
 
+
+        public string processBlanks(string sParam, Func fFunc)
+        {
+            bool flag;
+            char[] Marks = new char[] { '*', '/', '+', '-' /*, ' '*/ , '(', ')' };
+            // now space button - is the now onlyist way to split string
+            for (int i = sParam.Length - 1; i >= 0; i--)
+            {
+                flag = false;
+                foreach (char cNow in Marks)
+                {
+                    if (cNow == sParam[i])
+                        flag = true;
+                }
+                if (flag)
+                {
+                    sParam = sParam.Insert(i + 1, " ");
+                    sParam = sParam.Insert(i, " ");
+                }
+            }
+            return sParam;
+        }
     }
 }

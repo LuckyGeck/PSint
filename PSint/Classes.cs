@@ -594,7 +594,7 @@ namespace PSint
                         {
                             case "#while":
                                 nWhileStack.Add(n);
-                                param = frmain1.processVars(param, this);
+                                param = frmain1.processBlanks(param, this);
                                 if (!bEndWhile) //if we must process this if
                                 {
                                     if (!frmain1.processLogicalSeq(param, this)) // param=>false
@@ -620,7 +620,7 @@ namespace PSint
                                 break;
                             case "#if":
                                 nIfStack.Add(n);
-                                param = frmain1.processVars(param, this);
+                                param = frmain1.processBlanks(param, this);
                                 if (!bEndIfSearch) //if we must process this if
                                 {
                                     if (!frmain1.processLogicalSeq(param, this)) // param=>false
@@ -661,7 +661,7 @@ namespace PSint
                                 }
                                 break;
                             default:
-                                if (bEndIfSearch) break;
+                                if ((bEndIfSearch)||(bEndWhile)) break;
                                 frmain1.execCmd(cmd, param, this);
                                 break;
                         }
