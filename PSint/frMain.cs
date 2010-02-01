@@ -245,7 +245,7 @@ namespace PSint
         /// <param name="sParam">String with @vars.</param>
         /// <param name="fFunc">The instance of Func class, which is currently running.</param>
         /// <returns>String, where all @vars are changed to their values.</returns>
-        private string processVars(string sParam, Func fFunc)
+        public string processVars(string sParam, Func fFunc)
         {
             string sRet = "";
             bool flag;
@@ -443,7 +443,7 @@ namespace PSint
         }
 
         /// <summary>
-        /// This method sets all brackets needed in this seq. AAA this is not true!
+        /// This method sets all brackets needed in this seq.
         /// </summary>
         /// <param name="sParam">Unparsed seq.</param>
         /// <returns>Seq. with brackets.</returns>
@@ -465,7 +465,7 @@ namespace PSint
             sParams.Add(sParam.Substring(i1));
             Base a = new Base();
             Base b = new Base();
-            Base c = new Base();
+            Base c;
             while (flag)
             {
                 flag = false;
@@ -482,6 +482,9 @@ namespace PSint
                                 break;
                             case "/":
                                 c = a / b;
+                                break;
+                            default:
+                                c = new Base();
                                 break;
                         }
                         sParams.RemoveAt(i - 1);
@@ -507,6 +510,9 @@ namespace PSint
                                 break;
                             case "-":
                                 c = a - b;
+                                break;
+                            default:
+                                c = new Base();
                                 break;
                         }
                         sParams.RemoveAt(i - 1);
@@ -591,8 +597,10 @@ namespace PSint
                         }
 
                         param = param.Trim();
+
                         if (param[0] == '(' && param[param.Length - 1] == ')')
                             param = processComplicatedSeq(param);
+
                         long lg;
                         double db;
                         Base b;
