@@ -375,7 +375,7 @@ namespace PSint
             vrb = new List<Base>();
             vrb.Add(new Base("@pi", Math.PI));
             vrb.Add(new Base("@avagadra", 6.02 * Math.Pow(10, 23)));
-            vrb.Add(new Base("@g", 10));
+            vrb.Add(new Base("@g", 9.8));
             vrb.Add(new Base("@authors", "Pavel Sychev and Semen Mikheynok"));
         }
 

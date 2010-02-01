@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace PSint
 {
@@ -247,6 +248,22 @@ namespace PSint
         private string processVars(string sParam, Func fFunc)
         {
             string sRet = "";
+            bool flag;
+            char[] Marks = new char[] { '*', '/', '+', '-' , ' ' , '(' , ')'}; // now space button - is the now onlyist way to split string
+            for (int i = sParam.Length - 1; i >= 0; i--)
+            {
+                flag = false;
+                foreach (char cNow in Marks)
+                {
+                    if (cNow == sParam[i])
+                        flag = true;
+                }
+                if (flag)
+                {
+                    sParam = sParam.Insert(i+1, " ");
+                    sParam = sParam.Insert(i, " ");
+                }
+            }
             string[] splitParam = sParam.Split(' ');
             foreach (string s in splitParam)
             {
@@ -400,20 +417,106 @@ namespace PSint
         /// <returns>Result of calculating this seq.</returns>
         private string processComplicatedSeq(string sParam)
         {
-            sParam = setBrackets(sParam);
-            ///Here will be your code
+            //sParam = setBrackets(sParam);
+            /////Here will be your code
+            int iFirst = 0;
+            int iLast;
+
+            string sRewrite;
+            sParam.Trim();
+            while (sParam.IndexOf('(') != -1)
+            {
+                for (int i = 0; i < sParam.Length; i++)
+                {
+                    if (sParam[i] == '(')
+                        iFirst = i; // Trying to find the deepiest bracket pair
+                    if (sParam[i] == ')')
+                    {
+                        iLast = i; // Trying to find the deepiest bracket pair
+                        sRewrite = CountExpression(sParam.Substring(iFirst+1,iLast - iFirst-1)); // Recount expression in this bracket
+                        sParam = sParam.Remove(iFirst,iLast - iFirst+1); // Delete expression
+                        sParam = sParam.Insert(iFirst, sRewrite); // insert answer of this expression
+                    }
+                }
+            }
             return sParam;
         }
 
         /// <summary>
-        /// This method sets all brackets needed in this seq.
+        /// This method sets all brackets needed in this seq. AAA this is not true!
         /// </summary>
         /// <param name="sParam">Unparsed seq.</param>
         /// <returns>Seq. with brackets.</returns>
-        private string setBrackets(string sParam)
+        private string CountExpression(string sParam)
         {
             ///Here will be your code
-            return sParam;
+            int i1, i2;
+            bool flag = true;
+            List<string> sParams = new List<string>(); // Use List , not string[], because we need to delete some elements and insert some new
+            for (i1 = 0 , i2 = 0; i2 < sParam.Length; i2++)
+            {
+                if (sParam[i2] == '*' || sParam[i2] == '/' || sParam[i2] == '+' || sParam[i2] == '-')
+                {
+                    sParams.Add(sParam.Substring(i1,i2-i1));
+                    i1 = i2 + 1;
+                    sParams.Add(sParam[i2].ToString());
+                }
+            }
+            sParams.Add(sParam.Substring(i1));
+            Base a = new Base();
+            Base b = new Base();
+            Base c = new Base();
+            while (flag)
+            {
+                flag = false;
+                for (int i = 0; i < sParams.Count; i++)
+                {
+                    if (sParams[i] == "*" || sParams[i] == "/") // In First we find all operations * ans / and count them
+                    {
+                        a.SetUntyped(sParams[i - 1]);
+                        b.SetUntyped(sParams[i + 1]);
+                        switch (sParams[i])
+                        {
+                            case "*":
+                                c = a * b;
+                                break;
+                            case "/":
+                                c = a / b;
+                                break;
+                        }
+                        sParams.RemoveAt(i - 1);
+                        sParams.RemoveAt(i);
+                        sParams[i - 1] = c.Get();
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+            while (sParams.Count != 1)
+            {
+                for (int i = 0; i < sParams.Count; i++) // After we work with + and -
+                {
+                    if (sParams[i] == "+" || sParams[i] == "-")
+                    {
+                        a.SetUntyped(sParams[i - 1]);
+                        b.SetUntyped(sParams[i + 1]);
+                        switch (sParams[i])
+                        {
+                            case "+":
+                                c = a + b;
+                                break;
+                            case "-":
+                                c = a - b;
+                                break;
+                        }
+                        sParams.RemoveAt(i - 1);
+                        sParams.RemoveAt(i);
+                        sParams[i - 1] = c.Get();
+                        break;
+                    }
+                }
+            }
+            return sParams[0];
         }
         
         /// <summary>
@@ -445,7 +548,7 @@ namespace PSint
                         fFunc.sInput = param.Trim();
                         return "";
                     case "#temp": // this cmd is used only for testing some features, i.e. processing simple seq.
-                        param = processSimpleSeq(param, fFunc);
+                        param = processSimpleSeq(param, fFunc); 
                         frRun1.textBox2.Text += param;
                         frRun1.textBox2.Refresh();
                         return "";
@@ -488,6 +591,8 @@ namespace PSint
                         }
 
                         param = param.Trim();
+                        if (param[0] == '(' && param[param.Length - 1] == ')')
+                            param = processComplicatedSeq(param);
                         long lg;
                         double db;
                         Base b;
@@ -561,6 +666,8 @@ namespace PSint
                             string[] sCmdPar = extractCmdParam(param);
                             param = sCmdPar[0] + execCmd(sCmdPar[1], sCmdPar[2],fFunc);
                         }
+                        if (param[0] == '(' && param[param.Length - 1] == ')')
+                            param = processComplicatedSeq(param);
                         param = param.Replace("\\n", "\r\n");
                         param = param.Replace("==", "=");
                         if (fFunc.sOutput.ToLower() == "console")
@@ -589,6 +696,10 @@ namespace PSint
 
                     case "#sleep":
                         System.Threading.Thread.Sleep(Int32.Parse(param));
+                        return "";
+
+                    case "#clear": // this command use for clear program - window
+                        frRun1.textBox2.Clear();
                         return "";
 
                     case "#return":
