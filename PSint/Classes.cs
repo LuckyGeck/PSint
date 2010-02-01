@@ -629,11 +629,18 @@ namespace PSint
                                 }
                                 break;
                             case "#endif":
+                                if (nIfStack.Count != 0)
+                                {
                                     nIfStack.Remove(nIfStack.Max());
-                                    if (nIfStack.Count == 0) 
+                                    if (nIfStack.Count == 0)
                                     {
                                         bEndIfSearch = false;
                                     }
+                                }
+                                else
+                                {
+                                    frmain1.Error("#endif doesn't have an #if to close it!", n + 1);
+                                }
                                 break;
                             case "#return":
                                 if (bEndIfSearch) break;
