@@ -1,0 +1,17 @@
+#out Input num a:
+#in @a
+#out @a \n
+#out Input num b:
+#in @b
+#out @b \n
+#while @a!=@b
+#if @a>@b
+= @a (@a-@b)
+#out a-b:  a== @a b == @b \n
+#endif
+#if @a<@b
+= @b (@b-@a)
+#out b-a:  b== @b a == @a \n
+#endif
+#endwhile
+#out NOD @a

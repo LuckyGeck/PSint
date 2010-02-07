@@ -1,0 +1,9 @@
+#while @param_0!=@param_1
+#if @param_0>@param_1
+= @param_0 (@param_0-@param_1)
+#endif
+#if @param_0<@param_1
+= @param_1 (@param_1-@param_0)
+#endif
+#endwhile
+#return @param_0

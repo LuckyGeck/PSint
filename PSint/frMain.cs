@@ -240,6 +240,15 @@ namespace PSint
         }
 
         /// <summary>
+        /// This method shows the Error message.
+        /// </summary>
+        /// <param name="sParam">Error text.</param>
+        public void Error(string sParam)
+        {
+            MessageBox.Show(sParam, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        /// <summary>
         /// This method is processing vars.
         /// </summary>
         /// <param name="sParam">String with @vars.</param>
@@ -265,14 +274,14 @@ namespace PSint
             sRet = sRet.Trim();
             return sRet;
         }
-        
-        /// <summary>
-        /// Method, processing simple sequence - A <+,-,*,/> B
-        /// </summary>
-        /// <param name="sParam">Sequence</param>
-        /// <param name="fFunc">Func class instance</param>
-        /// <returns>Result of the sequence.</returns>
-        private string processSimpleSeq(string sParam, Func fFunc) 
+
+           /// <summary>
+           /// Method, processing simple sequence - A <+,-,*,/> B
+           /// </summary>
+           /// <param name="sParam">Sequence</param>
+           /// <param name="fFunc">Func class instance</param>
+           /// <returns>Result of the sequence.</returns>
+        private string processSimpleSeq(string sParam, Func fFunc)
         {
             if (sParam.IndexOf('+') > -1)
             {
@@ -332,65 +341,67 @@ namespace PSint
 
             string[] logicalMarks = new string[6] { "<=", ">=", "==", "!=", "<", ">"};
             string[] sParams = sParam.Split(logicalMarks, StringSplitOptions.None);
-            if (sParams.Length != 1) 
+            if (sParams.Length != 1)
             {
                 string usedLogic = sParam.Substring(sParams[0].Length, sParam.Length - sParams[0].Length - sParams[1].Length).Trim();
-                sParams[0] = processComplicatedSeq(processVars(sParams[0].Trim(),fFunc));
-                sParams[1] = processComplicatedSeq(processVars(sParams[1].Trim(),fFunc));
-                Base a = new Base();
-                a.SetUntyped(sParams[0]);
-                Base b = new Base();
-                b.SetUntyped(sParams[1]);
+                sParams[0] = processComplicatedSeq(processVars(sParams[0].Trim(), fFunc));
+                sParams[1] = processComplicatedSeq(processVars(sParams[1].Trim(), fFunc));
+                if (!bStartBreaking)
+                {
+                    Base a = new Base();
+                    a.SetUntyped(sParams[0]);
+                    Base b = new Base();
+                    b.SetUntyped(sParams[1]);
 
-                switch (usedLogic)
-                {
-                    case "<":
-                        answer = (a < b);
-                        break;
-                    case ">":
-                        answer = (a > b);
-                        break;
-                    case "<=":
-                        answer = (a <= b);
-                        break;
-                    case ">=":
-                        answer = (a >= b);
-                        break;
-                    case "!=":
-                        answer = (a != b);
-                        break;
-                    case "==":
-                        answer = (a == b);
-                        break;
+                    switch (usedLogic)
+                    {
+                        case "<":
+                            answer = (a < b);
+                            break;
+                        case ">":
+                            answer = (a > b);
+                            break;
+                        case "<=":
+                            answer = (a <= b);
+                            break;
+                        case ">=":
+                            answer = (a >= b);
+                            break;
+                        case "!=":
+                            answer = (a != b);
+                            break;
+                        case "==":
+                            answer = (a == b);
+                            break;
+                    }
                 }
+                else
+                    switch (sParams[0][0])
+                    {
+                        case '@':
+                            try
+                            {
+                                answer = Convert.ToBoolean(fFunc.getVar(sParams[0].Trim()));
+                            }
+                            catch
+                            {
+                                answer = false;
+                            }
+                            break;
+                        case '&':
+                            try
+                            {
+                                answer = Convert.ToBoolean(fFunc.getGlVar(sParams[0].Trim()));
+                            }
+                            catch
+                            {
+                                answer = false;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
             }
-            else
-                switch (sParams[0][0])
-                {
-                    case '@':
-                        try
-                        {
-                            answer = Convert.ToBoolean(fFunc.getVar(sParams[0].Trim()));
-                        }
-                        catch
-                        {
-                            answer = false;
-                        }
-                        break;
-                    case '&':
-                        try
-                        {
-                            answer = Convert.ToBoolean(fFunc.getGlVar(sParams[0].Trim()));
-                        }
-                        catch
-                        {
-                            answer = false;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                
             return answer;
         }
 
@@ -405,25 +416,68 @@ namespace PSint
             /////Here will be your code
             int iFirst = 0;
             int iLast;
-
-            string sRewrite;
-            sParam = sParam.Trim();
-            while (sParam.IndexOf('(') != -1)
+            if (!pairBrackets(sParam))
             {
-                for (int i = 0; i < sParam.Length; i++)
+                if (!bStartBreaking)
                 {
-                    if (sParam[i] == '(')
-                        iFirst = i; // Trying to find the deepiest bracket pair
-                    if (sParam[i] == ')')
+                    Error("You have unpaired brackets!");
+                    bStartBreaking = true;
+                }
+                return "false";
+            }
+            else
+            {
+                string sRewrite;
+                sParam = sParam.Trim();
+                while (sParam.IndexOf('(') != -1)
+                {
+                    for (int i = 0; i < sParam.Length; i++)
                     {
-                        iLast = i; // Trying to find the deepiest bracket pair
-                        sRewrite = CountExpression(sParam.Substring(iFirst+1,iLast - iFirst-1)); // Recount expression in this bracket
-                        sParam = sParam.Remove(iFirst,iLast - iFirst+1); // Delete expression
-                        sParam = sParam.Insert(iFirst, sRewrite); // insert answer of this expression
+                        if (sParam[i] == '(')
+                            iFirst = i; // Trying to find the deepiest bracket pair
+                        if (sParam[i] == ')')
+                        {
+                            iLast = i; // Trying to find the deepiest bracket pair
+                            sRewrite = CountExpression(sParam.Substring(iFirst + 1, iLast - iFirst - 1)); // Recount expression in this bracket
+                            sParam = sParam.Remove(iFirst, iLast - iFirst + 1); // Delete expression
+                            sParam = sParam.Insert(iFirst, sRewrite); // insert answer of this expression
+                        }
                     }
                 }
+                return sParam;
             }
-            return sParam;
+        }
+
+        /// <summary>
+        /// This method checks, if brackets are paired. 
+        /// </summary>
+        /// <param name="sParam">Some expression</param>
+        /// <returns>True - brackets are paired
+        /// False - not paired.</returns>
+        private bool pairBrackets(string sParam)
+        {
+            int oBrack = 0;
+            int cBrack = 0;
+            foreach (Char c in sParam)
+            {
+                switch (c)
+                {
+                    case '(':
+                        oBrack++;
+                        break;
+                    case ')':
+                        cBrack++;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (oBrack != cBrack)
+            {
+                return false;
+            }
+            else
+                return true;
         }
 
         /// <summary>
