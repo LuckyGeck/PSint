@@ -5,6 +5,8 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Drawing;
 
 namespace PSint
 {
@@ -66,9 +68,22 @@ namespace PSint
         /// <param name="sParam">Path to the file</param>
         private void LoadFile(string sParam)
         {
-            textBox1.Text = File.ReadAllText(sParam, Encoding.UTF8);
+            string s = File.ReadAllText(sParam, Encoding.UTF8);
+            textBox1.Clear();
+            textBox1.Text = s;
             path = sParam;
             SetCaption();
+            reparseAll();
+        }
+
+        private void reparseAll()
+        {
+            int n = 0;
+            foreach (string s in textBox1.Lines)
+            {
+                ParseLine(s, textBox1.GetFirstCharIndexFromLine(n));
+                n++;
+            }
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -98,7 +113,7 @@ namespace PSint
                 bTextChanged = false;
             }
         }
-
+        
         private void dialSave_FileOk(object sender, CancelEventArgs e)
         {
             SaveFile(dialSave.FileName);
@@ -903,5 +918,110 @@ namespace PSint
             }
             return sParam;
         }
+
+        private void textBox1_KeyUp(object sender, KeyEventArgs e)
+        {
+           // textBox1.SuspendLayout();
+            int nSelSt = textBox1.SelectionStart;
+            int nLine = textBox1.GetLineFromCharIndex(textBox1.GetFirstCharIndexOfCurrentLine());
+            if ((e.KeyCode == Keys.Enter) || (e.KeyCode == Keys.Tab) || (e.KeyCode == Keys.Space) || (e.KeyCode==Keys.Back) || (e.KeyCode==Keys.Delete))
+            {
+                if (textBox1.Text != "")
+                    ParseLine(textBox1.Lines[nLine]);
+            }
+            if ((e.KeyCode == Keys.Enter) || (e.KeyCode==Keys.Back) || (e.KeyCode==Keys.Delete))
+            {
+                if (nLine > 1)
+                    ParseLine(textBox1.Lines[nLine - 1], textBox1.GetFirstCharIndexFromLine(nLine - 1));
+            }
+            if (textBox1.SelectionStart!=nSelSt)
+            textBox1.SelectionStart = nSelSt;
+            //textBox1.ResumeLayout();
+        }
+
+        /// <summary>
+        /// This method Highlights the current line in textbox
+        /// </summary>
+        /// <param name="line">Text of the line</param>
+        public void ParseLine(string line)
+        {
+            ParseLine(line, textBox1.GetFirstCharIndexOfCurrentLine());
+        }
+
+        //ololo Onotole otake
+        /// <summary>
+        /// This method highlights a line, that strts from particular symbol.
+        /// </summary>
+        /// <param name="line">The text of the line.</param>
+        /// <param name="nParam">The number of the first symbol in our line.</param>
+        public void ParseLine(string line, int nParam)
+        {
+
+            int nPos = nParam;
+            Regex r = new Regex("([ \\t{}():;])");
+            String[] tokens = r.Split(line);
+
+            String[] blueKeywords = { "#in", "#out", "#random", "#time", "#clear", "#sleep", "=" };
+            String[] redKeywords = { "#function", "#return", "#instream", "#outstream" };
+            String[] greenKeywords = { "#while", "#if", "#endwhile", "#endif" };
+
+            foreach (string token in tokens)
+            {
+                Color cl = Color.Black;
+                bool clSelected = false;
+
+                ///Blue highlighting
+                for (int i = 0; i < blueKeywords.Length; i++)
+                {
+                    if (blueKeywords[i] == token.ToLower())
+                    {
+                        cl = Color.Blue;
+                        clSelected = true;
+                        break;
+                    }
+                }
+
+                ///Red Highlighting
+                if (!clSelected)
+                    for (int i = 0; i < redKeywords.Length; i++)
+                    {
+                        if (redKeywords[i] == token.ToLower())
+                        {
+                            cl = Color.Red;
+                            clSelected = true;
+                            break;
+                        }
+                    }
+
+                ///Green highlighting
+                if (!clSelected)
+                    for (int i = 0; i < greenKeywords.Length; i++)
+                    {
+                        if (greenKeywords[i] == token.ToLower())
+                        {
+                            cl = Color.Green;
+                            clSelected = true;
+                            break;
+                        }
+                    }
+
+                //Painting!)))
+                textBox1.Select(nPos, token.Length);
+                textBox1.SelectionColor = cl;
+
+                if (cl != Color.Black)
+                    textBox1.SelectionFont = new Font("Verdana", 10, FontStyle.Bold);
+                else
+                    textBox1.SelectionFont = new Font("Verdana", 10, FontStyle.Regular);
+
+                textBox1.DeselectAll();
+
+                nPos += token.Length; // position in line
+            }
+
+            textBox1.SelectionColor = Color.Black;
+            textBox1.SelectionFont = new Font("Verdana", 10, FontStyle.Regular);
+        }
+
     }
 }

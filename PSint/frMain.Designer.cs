@@ -51,12 +51,12 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.onlineWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dialOpen = new System.Windows.Forms.OpenFileDialog();
             this.dialSave = new System.Windows.Forms.SaveFileDialog();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.onlineWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.textBox1 = new System.Windows.Forms.RichTextBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -240,6 +240,13 @@
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
+            // onlineWikiToolStripMenuItem
+            // 
+            this.onlineWikiToolStripMenuItem.Name = "onlineWikiToolStripMenuItem";
+            this.onlineWikiToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.onlineWikiToolStripMenuItem.Text = "Online Wiki";
+            this.onlineWikiToolStripMenuItem.Click += new System.EventHandler(this.onlineWikiToolStripMenuItem_Click);
+            // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
@@ -269,21 +276,13 @@
             // textBox1
             // 
             this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.Font = new System.Drawing.Font("Verdana", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.textBox1.Font = new System.Drawing.Font("Verdana", 10F);
             this.textBox1.Location = new System.Drawing.Point(0, 24);
-            this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textBox1.Size = new System.Drawing.Size(608, 357);
-            this.textBox1.TabIndex = 3;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            // 
-            // onlineWikiToolStripMenuItem
-            // 
-            this.onlineWikiToolStripMenuItem.Name = "onlineWikiToolStripMenuItem";
-            this.onlineWikiToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.onlineWikiToolStripMenuItem.Text = "Online Wiki";
-            this.onlineWikiToolStripMenuItem.Click += new System.EventHandler(this.onlineWikiToolStripMenuItem_Click);
+            this.textBox1.TabIndex = 4;
+            this.textBox1.Text = "";
+            this.textBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyUp);
             // 
             // frMain
             // 
@@ -325,7 +324,6 @@
         private System.Windows.Forms.OpenFileDialog dialOpen;
         private System.Windows.Forms.SaveFileDialog dialSave;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
@@ -336,6 +334,7 @@
         private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem onlineWikiToolStripMenuItem;
+        private System.Windows.Forms.RichTextBox textBox1;
     }
 }
 
