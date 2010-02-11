@@ -206,7 +206,7 @@ namespace PSint
                 textBox1.Text = "";
                 SetCaption();
             }
-
+            reparseAll();
         }
 
         /// <summary>
@@ -870,11 +870,13 @@ namespace PSint
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             textBox1.Cut();
+            reparseAll();
         }
 
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             textBox1.Paste();
+            reparseAll();
         }
 
         internal void inKbrd(string s)
@@ -921,22 +923,28 @@ namespace PSint
 
         private void textBox1_KeyUp(object sender, KeyEventArgs e)
         {
-           // textBox1.SuspendLayout();
-            int nSelSt = textBox1.SelectionStart;
-            int nLine = textBox1.GetLineFromCharIndex(textBox1.GetFirstCharIndexOfCurrentLine());
-            if ((e.KeyCode == Keys.Enter) || (e.KeyCode == Keys.Tab) || (e.KeyCode == Keys.Space) || (e.KeyCode==Keys.Back) || (e.KeyCode==Keys.Delete))
+            if ((e.Control) && ((e.KeyCode == Keys.V) || (e.KeyCode == Keys.X) || (e.KeyCode == Keys.Z)))
             {
-                if (textBox1.Text != "")
-                    ParseLine(textBox1.Lines[nLine]);
+                reparseAll();
             }
-            if ((e.KeyCode == Keys.Enter) || (e.KeyCode==Keys.Back) || (e.KeyCode==Keys.Delete))
+            else
             {
-                if (nLine > 1)
-                    ParseLine(textBox1.Lines[nLine - 1], textBox1.GetFirstCharIndexFromLine(nLine - 1));
+                int nSelSt = textBox1.SelectionStart; //position of the cursor
+                int nLine = textBox1.GetLineFromCharIndex(textBox1.GetFirstCharIndexOfCurrentLine()); // working line
+
+                if ((e.KeyCode == Keys.Enter) || (e.KeyCode == Keys.Tab) || (e.KeyCode == Keys.Space) || (e.KeyCode == Keys.Back) || (e.KeyCode == Keys.Delete))
+                {
+                    if (textBox1.Text != "")
+                        ParseLine(textBox1.Lines[nLine]); // redraw current line
+                }
+                if ((e.KeyCode == Keys.Enter) || (e.KeyCode == Keys.Back) || (e.KeyCode == Keys.Delete))
+                {
+                    if (nLine > 1)
+                        ParseLine(textBox1.Lines[nLine - 1], textBox1.GetFirstCharIndexFromLine(nLine - 1)); // redraw previouse line
+                }
+                if (textBox1.SelectionStart != nSelSt)
+                    textBox1.SelectionStart = nSelSt; //restore cursor pos
             }
-            if (textBox1.SelectionStart!=nSelSt)
-            textBox1.SelectionStart = nSelSt;
-            //textBox1.ResumeLayout();
         }
 
         /// <summary>
