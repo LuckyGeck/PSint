@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Drawing;
+using PSint.Properties;
 
 namespace PSint
 {
@@ -26,8 +27,19 @@ namespace PSint
         public frMain()
         {
             InitializeComponent();
-            dialOpen.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
-            dialSave.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+            syntaxHToolStripMenuItem.Checked = Settings.Default.syntax;
+
+            if (File.Exists(Settings.Default.lastOpend))
+            {
+                dialOpen.InitialDirectory = Path.GetDirectoryName(Settings.Default.lastOpend);
+                dialSave.InitialDirectory = Path.GetDirectoryName(Settings.Default.lastOpend);
+                LoadFile(Settings.Default.lastOpend);
+            }
+            else
+            {
+                dialOpen.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+                dialSave.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -78,11 +90,14 @@ namespace PSint
 
         private void reparseAll()
         {
-            int n = 0;
-            foreach (string s in textBox1.Lines)
+            if (Settings.Default.syntax)
             {
-                ParseLine(s, textBox1.GetFirstCharIndexFromLine(n));
-                n++;
+                int n = 0;
+                foreach (string s in textBox1.Lines)
+                {
+                    ParseLine(s, textBox1.GetFirstCharIndexFromLine(n));
+                    n++;
+                }
             }
         }
 
@@ -154,6 +169,9 @@ namespace PSint
             {
                 Text = "PS interpretator - [Unknown]";
             }
+
+            Settings.Default.lastOpend = path;
+            Settings.Default.Save();
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -923,27 +941,31 @@ namespace PSint
 
         private void textBox1_KeyUp(object sender, KeyEventArgs e)
         {
-            if ((e.Control) && ((e.KeyCode == Keys.V) || (e.KeyCode == Keys.X) || (e.KeyCode == Keys.Z)))
+            if (Settings.Default.syntax)
             {
-                reparseAll();
-            }
-            else
-            {
-                int nSelSt = textBox1.SelectionStart; //position of the cursor
-                int nLine = textBox1.GetLineFromCharIndex(textBox1.GetFirstCharIndexOfCurrentLine()); // working line
+                Keys key = Keys.LButton | Keys.ShiftKey;
+                if ((e.KeyCode == key) || (e.Control) && ((e.KeyCode == Keys.V) || (e.KeyCode == Keys.X) || (e.KeyCode == Keys.Z)))
+                {
+                    reparseAll();
+                }
+                else
+                {
+                    int nSelSt = textBox1.SelectionStart; //position of the cursor
+                    int nLine = textBox1.GetLineFromCharIndex(textBox1.GetFirstCharIndexOfCurrentLine()); // working line
 
-                if ((e.KeyCode == Keys.Enter) || (e.KeyCode == Keys.Tab) || (e.KeyCode == Keys.Space) || (e.KeyCode == Keys.Back) || (e.KeyCode == Keys.Delete))
-                {
-                    if (textBox1.Text != "")
-                        ParseLine(textBox1.Lines[nLine]); // redraw current line
+                    if ((e.KeyCode == Keys.Enter) || (e.KeyCode == Keys.Tab) || (e.KeyCode == Keys.Space) || (e.KeyCode == Keys.Back) || (e.KeyCode == Keys.Delete))
+                    {
+                        if (textBox1.Text != "")
+                            ParseLine(textBox1.Lines[nLine]); // redraw current line
+                    }
+                    if ((e.KeyCode == Keys.Enter) || (e.KeyCode == Keys.Back) || (e.KeyCode == Keys.Delete))
+                    {
+                        if (nLine > 1)
+                            ParseLine(textBox1.Lines[nLine - 1], textBox1.GetFirstCharIndexFromLine(nLine - 1)); // redraw previouse line
+                    }
+                    if (textBox1.SelectionStart != nSelSt)
+                        textBox1.SelectionStart = nSelSt; //restore cursor pos
                 }
-                if ((e.KeyCode == Keys.Enter) || (e.KeyCode == Keys.Back) || (e.KeyCode == Keys.Delete))
-                {
-                    if (nLine > 1)
-                        ParseLine(textBox1.Lines[nLine - 1], textBox1.GetFirstCharIndexFromLine(nLine - 1)); // redraw previouse line
-                }
-                if (textBox1.SelectionStart != nSelSt)
-                    textBox1.SelectionStart = nSelSt; //restore cursor pos
             }
         }
 
@@ -1031,5 +1053,11 @@ namespace PSint
             textBox1.SelectionFont = new Font("Verdana", 10, FontStyle.Regular);
         }
 
+
+        private void syntaxHToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Settings.Default.syntax = syntaxHToolStripMenuItem.Checked;
+            Settings.Default.Save();
+        }
     }
 }

@@ -22,5 +22,29 @@ namespace PSint.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool syntax {
+            get {
+                return ((bool)(this["syntax"]));
+            }
+            set {
+                this["syntax"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string lastOpend {
+            get {
+                return ((string)(this["lastOpend"]));
+            }
+            set {
+                this["lastOpend"] = value;
+            }
+        }
     }
 }
