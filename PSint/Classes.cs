@@ -363,7 +363,8 @@ namespace PSint
             sInput = "Console";
             sOutput = "Console";
             string[] c = new string[1];
-            c[0]="\r\n";
+           // c[0]="\r\n";
+            c[0] = "\n";
             code = sCode.Split(c,System.StringSplitOptions.None);
         }
 
