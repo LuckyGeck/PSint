@@ -250,7 +250,7 @@ namespace PSint
                         answer = (a.db < b.db);
                     else
                         if (a.use == "String")
-                            answer = (a.str.Length < b.str.Length);
+                            answer = (String.Compare(a.str,b.str) < 0);
             }
             return answer;
         }
@@ -266,7 +266,7 @@ namespace PSint
                         answer = (a.db > b.db);
                     else
                         if (a.use == "String")
-                            answer = (a.str.Length > b.str.Length);
+                            answer = (String.Compare(a.str, b.str) > 0);
             }
             return answer;
         }
@@ -282,7 +282,7 @@ namespace PSint
                         answer = (a.db >= b.db);
                     else
                         if (a.use == "String")
-                            answer = (a.str.Length >= b.str.Length);
+                            answer = (String.Compare(a.str, b.str) >= 0);
             }
             return answer;
         }
@@ -298,7 +298,7 @@ namespace PSint
                         answer = (a.db <= b.db);
                     else
                         if (a.use == "String")
-                            answer = (a.str.Length <= b.str.Length);
+                            answer = (String.Compare(a.str, b.str) <= 0);
             }
             return answer;
         }
@@ -314,7 +314,7 @@ namespace PSint
                         answer = (a.db != b.db);
                     else
                         if (a.use == "String")
-                            answer = (a.str != b.str);
+                            answer = (String.Compare(a.str, b.str) != 0);
             }
             return answer;
         }
@@ -330,7 +330,7 @@ namespace PSint
                         answer = (a.db == b.db);
                     else
                         if (a.use == "String")
-                            answer = (a.str == b.str);
+                            answer = (String.Compare(a.str, b.str) == 0);
             }
             return answer;
         }
